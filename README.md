@@ -1,4 +1,4 @@
-# BlockRun
+# BlockRun: Give Claude Code a Wallet to Pay for GPT, Grok, DALL-E
 
 <div align="center">
 
