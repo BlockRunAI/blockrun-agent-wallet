@@ -27,7 +27,7 @@ from typing import Optional
 
 # Plugin version (keep in sync with plugin.json)
 __version__ = "1.0.0"
-GITHUB_PLUGIN_URL = "https://raw.githubusercontent.com/blockrunai/blockrun-agent-skill/main/plugin.json"
+GITHUB_PLUGIN_URL = "https://raw.githubusercontent.com/BlockRunAI/claude-code-blockrun-wallet/main/plugin.json"
 
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

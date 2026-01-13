@@ -4,7 +4,7 @@
   "description": "Give Claude a wallet to access capabilities it lacks - image generation, real-time X/Twitter data, and 30+ AI models via micropayments",
   "author": "BlockRun <care@blockrun.ai>",
   "homepage": "https://blockrun.ai",
-  "repository": "https://github.com/blockrunai/blockrun-agent-skill",
+  "repository": "https://github.com/BlockRunAI/claude-code-blockrun-wallet",
   "license": "MIT",
   "keywords": [
     "blockrun",
