@@ -18,9 +18,16 @@ Environment:
 """
 
 import argparse
+import json
 import os
 import sys
+import urllib.request
+import urllib.error
 from typing import Optional
+
+# Plugin version (keep in sync with plugin.json)
+__version__ = "1.0.0"
+GITHUB_PLUGIN_URL = "https://raw.githubusercontent.com/blockrunai/blockrun-agent-skill/main/plugin.json"
 
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -277,6 +284,48 @@ def cmd_models():
         return 1
 
 
+def cmd_check_update():
+    """Check for plugin updates from GitHub."""
+    print(f"\n  BlockRun Plugin v{__version__}")
+    print("  Checking for updates...\n")
+
+    try:
+        req = urllib.request.Request(
+            GITHUB_PLUGIN_URL,
+            headers={"User-Agent": "BlockRun-Plugin"}
+        )
+        with urllib.request.urlopen(req, timeout=10) as response:
+            remote_plugin = json.loads(response.read().decode())
+            remote_version = remote_plugin.get("version", "unknown")
+
+        if remote_version == __version__:
+            branding.print_success(f"You're up to date! (v{__version__})")
+        elif remote_version > __version__:
+            branding.print_info(f"Update available: v{__version__} → v{remote_version}")
+            print("\n  To update, run:")
+            print("    /plugin update blockrun\n")
+        else:
+            branding.print_info(f"Local: v{__version__}, Remote: v{remote_version}")
+
+        return 0
+
+    except urllib.error.URLError as e:
+        branding.print_error(f"Could not check for updates: {e.reason}")
+        return 1
+    except json.JSONDecodeError:
+        branding.print_error("Invalid response from GitHub")
+        return 1
+    except Exception as e:
+        branding.print_error(f"Error checking updates: {e}")
+        return 1
+
+
+def cmd_version():
+    """Show current version."""
+    print(f"BlockRun Plugin v{__version__}")
+    return 0
+
+
 def main():
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
@@ -317,6 +366,16 @@ More info: https://blockrun.ai
         "--models", "-m",
         action="store_true",
         help="List available models with pricing",
+    )
+    parser.add_argument(
+        "--check-update",
+        action="store_true",
+        help="Check for plugin updates from GitHub",
+    )
+    parser.add_argument(
+        "--version", "-v",
+        action="store_true",
+        help="Show plugin version",
     )
 
     # Chat options
@@ -361,6 +420,12 @@ More info: https://blockrun.ai
     args = parser.parse_args()
 
     # Handle commands
+    if args.version:
+        return cmd_version()
+
+    if args.check_update:
+        return cmd_check_update()
+
     if args.balance:
         return cmd_balance()
 
