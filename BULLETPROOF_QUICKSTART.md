@@ -4,12 +4,14 @@
 
 ---
 
-## Step 1: Install (10 seconds)
+## Step 1: Install (30 seconds)
 
-**For Claude Code:**
 ```bash
-/plugin install github:BlockRunAI/blockrun-claude-code-wallet
+# Install Python SDK
 pip install blockrun-llm
+
+# Install Claude Code skill
+git clone https://github.com/BlockRunAI/blockrun-claude-code-wallet ~/.claude/skills/blockrun
 ```
 
 **Verify it worked:**

@@ -80,19 +80,15 @@ You fund the agent with $1-5 USDC. The agent pays for GPT, Grok, DALL-E autonomo
 
 ## Install
 
-**For Claude Code (recommended):**
-```bash
-/plugin install github:BlockRunAI/blockrun-claude-code-wallet
-```
-
-**Update to latest version:**
-```bash
-/plugin update blockrun
-```
-
-**Python SDK (for custom scripts):**
+**Step 1: Install the Python SDK**
 ```bash
 pip install blockrun-llm
+```
+
+**Step 2: Install the Claude Code skill**
+```bash
+# Clone to Claude's skills directory
+git clone https://github.com/BlockRunAI/blockrun-claude-code-wallet ~/.claude/skills/blockrun
 ```
 
 A wallet is auto-created at `~/.blockrun/` on first use.
@@ -103,6 +99,17 @@ python -c "from blockrun_llm import LLMClient; c = LLMClient(); print('Wallet:',
 ```
 
 If you see a wallet address (0x...), you're ready.
+
+**Get funding QR code:**
+```bash
+python -c "from blockrun_llm import open_wallet_qr, get_wallet_address; open_wallet_qr(get_wallet_address())"
+```
+
+**Update to latest version:**
+```bash
+cd ~/.claude/skills/blockrun && git pull
+pip install --upgrade blockrun-llm
+```
 
 ---
 

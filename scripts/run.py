@@ -303,7 +303,33 @@ def cmd_image(
         if result.data and len(result.data) > 0:
             image_url = result.data[0].url
             branding.print_success("Image generated!")
-            print(f"\n  URL: {image_url}\n")
+
+            # Save image to file
+            import subprocess
+            from datetime import datetime
+
+            # Create filename with timestamp
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"blockrun_image_{timestamp}.png"
+            filepath = os.path.join(os.getcwd(), filename)
+
+            try:
+                # Download and save
+                urllib.request.urlretrieve(image_url, filepath)
+                branding.print_success(f"Saved to: {filepath}")
+
+                # Try to open with system viewer
+                if sys.platform == "darwin":  # macOS
+                    subprocess.run(["open", filepath], check=False)
+                elif sys.platform == "linux":
+                    subprocess.run(["xdg-open", filepath], check=False)
+                elif sys.platform == "win32":
+                    os.startfile(filepath)
+
+            except Exception as e:
+                # Fallback to just showing URL
+                print(f"\n  URL: {image_url}")
+                print(f"  (Could not save locally: {e})\n")
         else:
             branding.print_error("No image data returned")
 
@@ -441,6 +467,36 @@ def cmd_balance():
         )
 
         client.close()
+        return 0
+
+    except Exception as e:
+        branding.print_error(f"Error: {e}")
+        return 1
+
+
+def cmd_qr():
+    """Show QR code for wallet funding on Base network."""
+    if not HAS_SDK:
+        branding.print_error(
+            "blockrun_llm SDK not installed",
+            help_link="https://github.com/blockrunai/blockrun-llm"
+        )
+        return 1
+
+    try:
+        from blockrun_llm import get_wallet_address, open_wallet_qr
+        wallet = get_wallet_address()
+
+        print()
+        print(f"  Wallet: {wallet}")
+        print(f"  Network: Base (Chain ID: 8453)")
+        print(f"  Currency: USDC")
+        print()
+        print("  Opening QR code in browser...")
+        print("  Scan with any wallet app to send USDC on Base.")
+        print()
+
+        open_wallet_qr(wallet)
         return 0
 
     except Exception as e:
@@ -612,6 +668,11 @@ More info: https://blockrun.ai
         help="Show wallet balance",
     )
     parser.add_argument(
+        "--qr",
+        action="store_true",
+        help="Show wallet funding QR code (Base network)",
+    )
+    parser.add_argument(
         "--models", "-m",
         action="store_true",
         help="List available models with pricing",
@@ -695,6 +756,9 @@ More info: https://blockrun.ai
 
     if args.balance:
         return cmd_balance()
+
+    if args.qr:
+        return cmd_qr()
 
     if args.models:
         return cmd_models()
