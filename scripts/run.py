@@ -20,6 +20,7 @@ Environment:
 import argparse
 import json
 import os
+import re
 import sys
 import urllib.request
 import urllib.error
@@ -71,7 +72,22 @@ def check_environment() -> bool:
 def is_realtime_query(prompt: str) -> bool:
     """Check if prompt requires real-time data (Twitter/X)."""
     prompt_lower = prompt.lower()
-    return any(word in prompt_lower for word in ["twitter", "x.com", "trending on x", "elon", "musk", "@"])
+
+    # Direct keywords for real-time/social media queries
+    keywords = [
+        "twitter", "x.com", "trending", "elon", "musk",
+        "breaking news", "latest posts", "live updates",
+        "what are people saying", "current events"
+    ]
+    if any(word in prompt_lower for word in keywords):
+        return True
+
+    # Twitter handle pattern (@username but not email)
+    # Match @ followed by word chars, not preceded by word char (excludes email)
+    if re.search(r'(?<!\w)@\w+', prompt_lower):
+        return True
+
+    return False
 
 
 def get_smart_model(prompt: str, cheap: bool = False, fast: bool = False) -> str:
@@ -92,6 +108,10 @@ def get_smart_model(prompt: str, cheap: bool = False, fast: bool = False) -> str
     # Grok is the only model with live X/Twitter access
     if is_realtime_query(prompt):
         return "xai/grok-3"
+
+    # Warn if conflicting flags used
+    if cheap and fast:
+        branding.print_info("Note: --cheap and --fast both set; using --cheap")
 
     # Cost-optimized routing
     if cheap:
@@ -133,6 +153,11 @@ def cmd_chat(
         return 1
 
     if not check_environment():
+        return 1
+
+    # Validate temperature if provided
+    if temperature is not None and (temperature < 0.0 or temperature > 2.0):
+        branding.print_error("Temperature must be between 0.0 and 2.0")
         return 1
 
     # Determine model
@@ -275,7 +300,7 @@ def cmd_image(
         )
 
         # Print result
-        if result.data:
+        if result.data and len(result.data) > 0:
             image_url = result.data[0].url
             branding.print_success("Image generated!")
             print(f"\n  URL: {image_url}\n")
@@ -333,6 +358,21 @@ def cmd_image(
         return 1
 
 
+def is_valid_wallet_address(address: str) -> bool:
+    """Validate Ethereum wallet address format."""
+    if not address or not isinstance(address, str):
+        return False
+    if not address.startswith("0x"):
+        return False
+    if len(address) != 42:
+        return False
+    try:
+        int(address[2:], 16)
+        return True
+    except ValueError:
+        return False
+
+
 def get_usdc_balance(wallet_address: str) -> Optional[float]:
     """
     Get USDC balance for a wallet address on Base chain.
@@ -343,6 +383,9 @@ def get_usdc_balance(wallet_address: str) -> Optional[float]:
     Returns:
         USDC balance as float, or None if query fails
     """
+    if not is_valid_wallet_address(wallet_address):
+        return None
+
     import httpx
 
     # USDC contract on Base

@@ -113,7 +113,12 @@ class SpendingTracker:
 
         spent = self.data["spending"]["total_usd"]
         remaining = limit - spent
-        return remaining > 0, max(0, remaining)
+
+        # Use tolerance for floating-point comparison (0.0001 = 0.01 cent)
+        EPSILON = 0.0001
+        within_budget = remaining > -EPSILON
+
+        return within_budget, max(0, remaining)
 
     def set_budget(self, amount: float):
         """Set daily budget limit."""

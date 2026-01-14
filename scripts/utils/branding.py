@@ -280,7 +280,9 @@ class BlockRunBranding:
                 time_str = ts[11:16] if len(ts) >= 16 else ts  # Extract HH:MM
                 model = entry.get("model", "unknown")
                 cost = entry.get("cost", 0)
-                print(f"    {time_str}  {model:<30}  ${cost:.4f}")
+                # Truncate long model names to avoid misalignment
+                model_display = model[:32] + "..." if len(model) > 35 else model
+                print(f"    {time_str}  {model_display:<35}  ${cost:.4f}")
 
         print(self._c("dim", self.HEADER_LINE))
         print()
