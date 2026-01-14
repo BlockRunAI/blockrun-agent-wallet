@@ -68,6 +68,12 @@ def check_environment() -> bool:
     return True
 
 
+def is_realtime_query(prompt: str) -> bool:
+    """Check if prompt requires real-time data (Twitter/X)."""
+    prompt_lower = prompt.lower()
+    return any(word in prompt_lower for word in ["twitter", "x.com", "trending on x", "elon", "musk", "@"])
+
+
 def get_smart_model(prompt: str, cheap: bool = False, fast: bool = False) -> str:
     """
     Smart model routing based on prompt content and preferences.
@@ -82,6 +88,11 @@ def get_smart_model(prompt: str, cheap: bool = False, fast: bool = False) -> str
     """
     prompt_lower = prompt.lower()
 
+    # PRIORITY 1: Real-time data requires Grok (even with --cheap)
+    # Grok is the only model with live X/Twitter access
+    if is_realtime_query(prompt):
+        return "xai/grok-3"
+
     # Cost-optimized routing
     if cheap:
         return "deepseek/deepseek-chat"
@@ -90,14 +101,10 @@ def get_smart_model(prompt: str, cheap: bool = False, fast: bool = False) -> str
     if fast:
         return "openai/gpt-4o-mini"
 
-    # Content-based routing
-    if any(word in prompt_lower for word in ["twitter", "x.com", "trending", "elon", "musk"]):
-        return "xai/grok-3"
-
     if any(word in prompt_lower for word in ["code", "python", "javascript", "function", "debug"]):
         return "anthropic/claude-sonnet-4"
 
-    if any(word in prompt_lower for word in ["math", "proof", "logic", "reasoning", "solve"]):
+    if any(word in prompt_lower for word in ["math", "proof", "prove", "theorem", "logic", "reasoning", "solve", "calculate"]):
         return "openai/o1-mini"
 
     if any(word in prompt_lower for word in ["long", "document", "summarize", "analyze file"]):
@@ -151,6 +158,9 @@ def cmd_chat(
             wallet=client.get_wallet_address(),
         )
 
+        # Auto-enable search for Grok real-time queries (Twitter/X)
+        enable_search = is_realtime_query(prompt) and "grok" in selected_model.lower()
+
         # Execute chat
         response = client.chat(
             model=selected_model,
@@ -158,6 +168,7 @@ def cmd_chat(
             system=system,
             max_tokens=max_tokens,
             temperature=temperature,
+            search=enable_search,
         )
 
         # Print response
