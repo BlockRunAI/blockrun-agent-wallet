@@ -34,7 +34,7 @@ Copy this address. Send **$1-5 USDC on Base network** to it.
 
 | $1 USDC = | Calls |
 |-----------|-------|
-| GPT-4o queries | ~1,000 |
+| GPT-5 queries | ~1,000 |
 | DeepSeek queries | ~10,000 |
 | Grok queries | ~500 |
 | DALL-E images | ~20 |
@@ -79,7 +79,7 @@ Claude will call DALL-E and save the image.
 |----------|--------------|
 | "blockrun generate an image of X" | DALL-E creates it |
 | "blockrun grok what's trending on X?" | Grok answers (real-time) |
-| "blockrun GPT review this code" | GPT-4o reviews it |
+| "blockrun GPT review this code" | GPT-5 reviews it |
 | "blockrun deepseek summarize this" | DeepSeek (10x cheaper) |
 | "blockrun check balance" | Shows USDC balance |
 

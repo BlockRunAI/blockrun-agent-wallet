@@ -27,13 +27,13 @@ python run.py "Simple task" --cheap
 ### Use `--fast` Flag
 ```bash
 python run.py "Quick question" --fast
-# Routes to GPT-4o-mini (fastest)
+# Routes to GPT-5-mini (fastest)
 ```
 
 ### Choose Right Model for Task
-- **Quick questions**: gpt-4o-mini, claude-haiku
+- **Quick questions**: gpt-5-mini, claude-haiku
 - **Bulk processing**: deepseek-chat
-- **Quality matters**: gpt-4o, claude-sonnet-4
+- **Quality matters**: gpt-5.2, claude-sonnet-4
 
 ## Funding Your Wallet
 
@@ -49,7 +49,7 @@ python run.py --balance
 ## What $1 USDC Gets You
 
 Approximate calls per $1:
-- GPT-4o: ~1,000 calls
+- GPT-5: ~1,000 calls
 - DeepSeek: ~10,000 calls
 - Grok: ~500 calls
 - DALL-E images: ~20 images

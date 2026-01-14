@@ -14,12 +14,14 @@ You can't generate images. You have no real-time X/Twitter access. BlockRun give
 
 You have a wallet. When you need a capability you lack, you pay for it autonomously.
 
-| You Need | You Call | Cost |
-|----------|----------|------|
-| Image generation | DALL-E | $0.05 |
-| Real-time X data | Grok + Live Search | ~$0.26 (10 sources) |
-| Second opinion | GPT-4o | $0.001 |
-| Cheaper processing | DeepSeek | $0.0001 |
+| You Need | You Call | Pricing |
+|----------|----------|---------|
+| Image generation | DALL-E | $0.04/image |
+| Real-time X data | Grok + Live Search | $0.025/source |
+| Second opinion | GPT-5.2 | $1.75/M input, $14/M output |
+| Cheaper processing | DeepSeek | $0.14/M input, $0.28/M output |
+
+**How it works:** BlockRun uses x402 micropayments to route your requests to OpenAI, xAI, Google, and other providers. No API keys needed - your wallet pays per token.
 
 ## Budget Control (Optional)
 
@@ -37,7 +39,7 @@ if spending['total_usd'] >= budget:
     print(f"Budget reached: ${spending['total_usd']:.4f} spent")
     # Stop making calls
 else:
-    response = client.chat("openai/gpt-4o", "Hello!")
+    response = client.chat("openai/gpt-5.2", "Hello!")
 
 # At the end, report spending
 spending = client.get_spending()
@@ -64,7 +66,7 @@ source /Users/vickyfu/myenv_py313/bin/activate
 from blockrun_llm import LLMClient
 
 client = LLMClient()
-response = client.chat("openai/gpt-4o", "What is 2+2?")
+response = client.chat("openai/gpt-5.2", "What is 2+2?")
 print(response)
 
 # Check spending
@@ -181,27 +183,38 @@ response = client.chat("xai/grok-3", "What's trending?",
 
 ## Available Models
 
-| Model | Best For | Cost |
-|-------|----------|------|
-| `xai/grok-3` | Real-time X/Twitter data (with Live Search) | ~$0.26 (10 sources) |
-| `openai/gpt-4o` | Second opinions, code review | $$ |
-| `openai/o1` | Complex math, proofs, formal logic | $$$ |
-| `deepseek/deepseek-chat` | Simple tasks, bulk processing | $ |
-| `google/gemini-2.0-flash` | Very long documents (1M+ tokens) | $$ |
-| `openai/dall-e-3` | Photorealistic images | $$ |
-| `google/nano-banana` | Fast, artistic images | $ |
+| Model | Best For | Pricing |
+|-------|----------|---------|
+| `openai/gpt-5.2` | Second opinions, code review, general | $1.75/M in, $14/M out |
+| `openai/gpt-5-mini` | Cost-optimized reasoning | $0.30/M in, $1.20/M out |
+| `openai/o4-mini` | Latest efficient reasoning | $1.10/M in, $4.40/M out |
+| `openai/o3` | Advanced reasoning, complex problems | $10/M in, $40/M out |
+| `xai/grok-3` | Real-time X/Twitter data | $3/M + $0.025/source |
+| `deepseek/deepseek-chat` | Simple tasks, bulk processing | $0.14/M in, $0.28/M out |
+| `google/gemini-2.5-flash` | Very long documents, fast | $0.15/M in, $0.60/M out |
+| `openai/dall-e-3` | Photorealistic images | $0.04/image |
+| `google/nano-banana` | Fast, artistic images | $0.01/image |
+
+*M = million tokens. Actual cost depends on your prompt and response length.*
 
 ## Cost Reference
 
-| Action | Cost |
-|--------|------|
-| GPT-4o query | $0.001 |
-| Grok query (no search) | $0.002 |
-| Grok query + Live Search (default 10 sources) | ~$0.26 |
-| DeepSeek query | $0.0001 |
-| Image generation | $0.05 |
+All LLM costs are per million tokens (M = 1,000,000 tokens).
 
-$1 USDC = ~1,000 GPT-4o calls or ~10,000 DeepSeek calls.
+| Model | Input | Output |
+|-------|-------|--------|
+| GPT-5.2 | $1.75/M | $14.00/M |
+| GPT-5-mini | $0.30/M | $1.20/M |
+| Grok-3 (no search) | $3.00/M | $15.00/M |
+| DeepSeek | $0.14/M | $0.28/M |
+
+| Fixed Cost Actions | |
+|-------|--------|
+| Grok Live Search | $0.025/source (default 10 = $0.25) |
+| DALL-E image | $0.04/image |
+| Nano Banana image | $0.01/image |
+
+**Typical costs:** A 500-word prompt (~750 tokens) to GPT-5.2 costs ~$0.001 input. A 1000-word response (~1500 tokens) costs ~$0.02 output.
 
 ## Setup & Funding
 

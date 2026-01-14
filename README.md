@@ -49,7 +49,7 @@ With BlockRun, your AI agent has its own wallet. When it needs a capability it d
 |------|----------|------------|
 | Generate an image | Calls DALL-E | $0.05 |
 | Real-time X data | Calls Grok | $0.002 |
-| Second opinion | Calls GPT-4o | $0.001 |
+| Second opinion | Calls GPT-5.2 | $0.001 |
 | Cheaper processing | Calls DeepSeek | $0.0001 |
 
 No API keys. No human in the loop. Just an agent with a budget, acquiring capabilities on demand.
@@ -132,7 +132,7 @@ User: "yes"
 
 | Capability | Count | Examples |
 |------------|-------|----------|
-| **AI Models** | 30+ | GPT-4o, Grok, DeepSeek, Gemini, o1 |
+| **AI Models** | 30+ | GPT-5, Grok, DeepSeek, Gemini, o3 |
 | **Providers** | 5 | OpenAI, xAI, Google, DeepSeek, Anthropic |
 | **Image Models** | 3 | DALL-E 3, Nano Banana, Flux |
 | **Use Cases** | 5 | Images, Real-time, Second Opinion, Cost, Overflow |
@@ -146,7 +146,7 @@ User: "yes"
 | Setup time | **60 seconds** (vs 30+ min with API keys) |
 | API keys needed | **0** (vs 5 with traditional setup) |
 | Cost per GPT-4 call | **$0.001** |
-| Calls per $1 | **1,000** (GPT-4o) / **10,000** (DeepSeek) |
+| Calls per $1 | **1,000** (GPT-5) / **10,000** (DeepSeek) |
 
 ---
 
@@ -166,7 +166,7 @@ User: "yes"
 
 | Model | Calls per $1 |
 |-------|--------------|
-| GPT-4o | ~1,000 |
+| GPT-5 | ~1,000 |
 | DeepSeek | ~10,000 |
 | Grok | ~500 |
 | DALL-E images | ~20 |
@@ -205,7 +205,7 @@ response = client.chat("xai/grok-3", "What's trending on X about AI agents?")
 
 ### 3. AI Reviewing AI
 
-Different models catch different bugs. GPT finds things Claude misses.
+Different models catch different bugs. GPT-5.2 finds things Claude misses.
 
 ```python
 from blockrun_llm import LLMClient
@@ -219,8 +219,8 @@ def fibonacci(n):
     return fibonacci(n-1) + fibonacci(n-2)
 """
 
-review = client.chat("openai/gpt-4o", f"Review for bugs:\n{claude_code}")
-# GPT: "O(2^n) complexity. Use memoization or iteration."
+review = client.chat("openai/gpt-5.2", f"Review for bugs:\n{claude_code}")
+# GPT-5.2: "O(2^n) complexity. Use memoization or iteration."
 ```
 
 ### 4. Cost Optimization
@@ -238,15 +238,21 @@ for file in files:
 
 ## Available Models
 
-| Model | Best For | Cost |
-|-------|----------|------|
-| `xai/grok-3` | Real-time X/Twitter data | $$ |
-| `openai/gpt-4o` | Second opinions, general | $$ |
-| `openai/o1` | Math, proofs, complex reasoning | $$$ |
-| `deepseek/deepseek-chat` | Budget tasks, bulk processing | $ |
-| `google/gemini-2.0-flash` | Long documents (1M+ tokens) | $$ |
-| `openai/dall-e-3` | Photorealistic images | $$ |
-| `google/nano-banana` | Artistic, fast images | $ |
+BlockRun provides access to the latest models from OpenAI, Anthropic, Google, xAI, and DeepSeek via x402 micropayments.
+
+| Model | Best For | Pricing |
+|-------|----------|---------|
+| `openai/gpt-5.2` | Second opinions, code review, general | $1.75/M in, $14/M out |
+| `openai/gpt-5-mini` | Cost-optimized tasks | $0.30/M in, $1.20/M out |
+| `openai/o4-mini` | Efficient reasoning, math | $$ |
+| `openai/o3` | Complex reasoning | $$$ |
+| `xai/grok-3` | Real-time X/Twitter data | $3/M + $0.025/source |
+| `deepseek/deepseek-chat` | Budget tasks, bulk processing | $0.14/M in, $0.28/M out |
+| `google/gemini-2.5-flash` | Long documents (1M+ tokens) | $$ |
+| `openai/dall-e-3` | Photorealistic images | $0.04/image |
+| `google/nano-banana` | Artistic, fast images | $0.01/image |
+
+*Prices in USDC per million tokens (M = 1,000,000 tokens)*
 
 ---
 

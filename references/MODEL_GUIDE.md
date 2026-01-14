@@ -34,7 +34,7 @@ python run.py "prompt" --model openai/o1
 
 ### For Coding
 - anthropic/claude-sonnet-4 (best)
-- openai/gpt-4o (alternative)
+- openai/gpt-5.2 (alternative)
 - deepseek/deepseek-chat (budget)
 
 ### For Reasoning/Math

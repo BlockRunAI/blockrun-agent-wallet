@@ -98,6 +98,32 @@ class BlockRunBranding:
         """Print the main response content."""
         print(content)
 
+    def print_model_attribution(self, model: str, description: str = None):
+        """
+        Print model attribution after response.
+
+        Args:
+            model: Model ID used (e.g., "openai/gpt-5.2")
+            description: Optional model description
+        """
+        print()
+        print(self._c("dim", "-" * 60))
+
+        # Parse provider from model ID
+        provider = model.split("/")[0].upper() if "/" in model else "Unknown"
+        model_name = model.split("/")[1] if "/" in model else model
+
+        # Format model name nicely (keep version numbers intact)
+        display_name = model_name.upper().replace("-", " ")
+
+        print(f"  {self._c('cyan', 'Reviewed by:')} {display_name} ({provider})")
+
+        if description:
+            print(f"  {self._c('dim', description)}")
+
+        print(f"  {self._c('dim', 'Accessed via: BlockRun x402 micropayments')}")
+        print(self._c("dim", "-" * 60))
+
     def print_footer(
         self,
         actual_cost: Optional[str] = None,

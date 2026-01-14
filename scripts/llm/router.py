@@ -12,52 +12,123 @@ from typing import Optional, Dict, List
 
 # Model capabilities and routing rules
 MODEL_CATALOG = {
-    # OpenAI models
-    "openai/gpt-4o": {
+    # OpenAI GPT-5 family (latest)
+    "openai/gpt-5.2": {
         "provider": "OpenAI",
-        "strengths": ["general", "coding", "analysis"],
+        "description": "Latest frontier model with 400K context and adaptive reasoning",
+        "strengths": ["general", "coding", "analysis", "second-opinion"],
         "cost": "medium",
         "speed": "fast",
     },
-    "openai/gpt-4o-mini": {
+    "openai/gpt-5.2-pro": {
         "provider": "OpenAI",
-        "strengths": ["general", "quick-tasks"],
+        "description": "Pro version with more compute for complex tasks",
+        "strengths": ["complex", "analysis", "research"],
+        "cost": "high",
+        "speed": "medium",
+    },
+    "openai/gpt-5-mini": {
+        "provider": "OpenAI",
+        "description": "Cost-optimized reasoning model",
+        "strengths": ["general", "reasoning", "quick-tasks"],
         "cost": "low",
+        "speed": "fast",
+    },
+    "openai/gpt-5-nano": {
+        "provider": "OpenAI",
+        "description": "High-throughput for bulk tasks",
+        "strengths": ["quick-tasks", "bulk"],
+        "cost": "very-low",
         "speed": "very-fast",
+    },
+
+    # OpenAI o-series (reasoning)
+    "openai/o4-mini": {
+        "provider": "OpenAI",
+        "description": "Latest efficient reasoning model",
+        "strengths": ["reasoning", "math", "logic"],
+        "cost": "medium",
+        "speed": "medium",
+    },
+    "openai/o3": {
+        "provider": "OpenAI",
+        "description": "Advanced reasoning for complex problems",
+        "strengths": ["reasoning", "math", "logic", "complex"],
+        "cost": "high",
+        "speed": "slow",
+    },
+    "openai/o3-mini": {
+        "provider": "OpenAI",
+        "description": "STEM-focused reasoning",
+        "strengths": ["reasoning", "math"],
+        "cost": "medium",
+        "speed": "medium",
     },
     "openai/o1": {
         "provider": "OpenAI",
+        "description": "Original advanced reasoning model",
         "strengths": ["reasoning", "math", "logic", "complex"],
         "cost": "high",
         "speed": "slow",
     },
     "openai/o1-mini": {
         "provider": "OpenAI",
+        "description": "STEM-optimized reasoning",
         "strengths": ["reasoning", "math"],
         "cost": "medium",
         "speed": "medium",
     },
 
+    # OpenAI GPT-4 family (legacy but still available)
+    "openai/gpt-4.1": {
+        "provider": "OpenAI",
+        "strengths": ["general", "coding", "analysis"],
+        "cost": "medium",
+        "speed": "fast",
+    },
+    "openai/gpt-4o": {
+        "provider": "OpenAI",
+        "strengths": ["general", "coding", "analysis"],
+        "cost": "low",
+        "speed": "fast",
+    },
+    "openai/gpt-4o-mini": {
+        "provider": "OpenAI",
+        "strengths": ["general", "quick-tasks"],
+        "cost": "very-low",
+        "speed": "very-fast",
+    },
+
     # Anthropic models
+    "anthropic/claude-opus-4": {
+        "provider": "Anthropic",
+        "description": "Most capable Claude model",
+        "strengths": ["coding", "analysis", "complex", "writing"],
+        "cost": "high",
+        "speed": "medium",
+    },
     "anthropic/claude-sonnet-4": {
         "provider": "Anthropic",
+        "description": "Balanced performance and speed",
         "strengths": ["coding", "analysis", "writing"],
         "cost": "medium",
         "speed": "fast",
     },
-    "anthropic/claude-haiku": {
+    "anthropic/claude-haiku-4.5": {
         "provider": "Anthropic",
+        "description": "Fast and efficient",
         "strengths": ["quick-tasks", "summarization"],
         "cost": "low",
         "speed": "very-fast",
     },
 
     # Google models
-    "google/gemini-2.0-flash": {
+    "google/gemini-3-pro-preview": {
         "provider": "Google",
-        "strengths": ["long-context", "multimodal", "general"],
-        "cost": "low",
-        "speed": "fast",
+        "description": "Latest Gemini preview",
+        "strengths": ["long-context", "multimodal", "analysis"],
+        "cost": "medium",
+        "speed": "medium",
     },
     "google/gemini-2.5-pro": {
         "provider": "Google",
@@ -65,13 +136,33 @@ MODEL_CATALOG = {
         "cost": "medium",
         "speed": "medium",
     },
+    "google/gemini-2.5-flash": {
+        "provider": "Google",
+        "description": "Fast with long context support",
+        "strengths": ["long-context", "multimodal", "general"],
+        "cost": "low",
+        "speed": "fast",
+    },
+    "google/gemini-2.5-flash-lite": {
+        "provider": "Google",
+        "strengths": ["quick-tasks", "budget"],
+        "cost": "very-low",
+        "speed": "very-fast",
+    },
 
     # xAI models
     "xai/grok-3": {
         "provider": "xAI",
+        "description": "Real-time X/Twitter access with Live Search",
         "strengths": ["real-time", "twitter", "news", "current-events"],
         "cost": "medium",
         "speed": "fast",
+    },
+    "xai/grok-3-fast": {
+        "provider": "xAI",
+        "strengths": ["real-time", "quick-tasks"],
+        "cost": "low",
+        "speed": "very-fast",
     },
     "xai/grok-3-mini": {
         "provider": "xAI",
@@ -83,21 +174,15 @@ MODEL_CATALOG = {
     # DeepSeek models
     "deepseek/deepseek-chat": {
         "provider": "DeepSeek",
+        "description": "Most cost-effective general model",
         "strengths": ["general", "coding", "budget"],
         "cost": "very-low",
         "speed": "fast",
     },
-    "deepseek/deepseek-r1": {
+    "deepseek/deepseek-reasoner": {
         "provider": "DeepSeek",
+        "description": "Reasoning at budget prices",
         "strengths": ["reasoning", "math", "budget"],
-        "cost": "low",
-        "speed": "medium",
-    },
-
-    # Meta models
-    "meta/llama-3.3-70b": {
-        "provider": "Meta",
-        "strengths": ["general", "open-source"],
         "cost": "low",
         "speed": "medium",
     },
@@ -152,14 +237,14 @@ def smart_route(
         task_hint: Optional explicit task type hint
 
     Returns:
-        Model ID string (e.g., "openai/gpt-4o")
+        Model ID string (e.g., "openai/gpt-5.2")
     """
     # Handle explicit preferences
     if cheap:
         return "deepseek/deepseek-chat"
 
     if fast:
-        return "openai/gpt-4o-mini"
+        return "openai/gpt-5-nano"
 
     # Detect task type
     task_types = [task_hint] if task_hint else detect_task_type(prompt)
@@ -172,19 +257,19 @@ def smart_route(
         return "anthropic/claude-sonnet-4"
 
     if "reasoning" in task_types:
-        return "openai/o1-mini"
+        return "openai/o4-mini"
 
     if "long-context" in task_types:
-        return "google/gemini-2.0-flash"
+        return "google/gemini-2.5-flash"
 
     if "quick-tasks" in task_types:
-        return "openai/gpt-4o-mini"
+        return "openai/gpt-5-mini"
 
     if "writing" in task_types:
         return "anthropic/claude-sonnet-4"
 
-    # Default: GPT-4o for general tasks
-    return "openai/gpt-4o"
+    # Default: GPT-5.2 for general tasks (latest frontier model)
+    return "openai/gpt-5.2"
 
 
 def get_model_for_task(task: str) -> str:
@@ -199,20 +284,22 @@ def get_model_for_task(task: str) -> str:
     """
     task_to_model = {
         "coding": "anthropic/claude-sonnet-4",
-        "reasoning": "openai/o1-mini",
-        "math": "openai/o1-mini",
+        "reasoning": "openai/o4-mini",
+        "math": "openai/o4-mini",
+        "complex": "openai/o3",
         "real-time": "xai/grok-3",
         "twitter": "xai/grok-3",
-        "long-context": "google/gemini-2.0-flash",
+        "long-context": "google/gemini-2.5-flash",
         "budget": "deepseek/deepseek-chat",
         "cheap": "deepseek/deepseek-chat",
-        "fast": "openai/gpt-4o-mini",
-        "general": "openai/gpt-4o",
+        "fast": "openai/gpt-5-nano",
+        "general": "openai/gpt-5.2",
+        "second-opinion": "openai/gpt-5.2",
         "writing": "anthropic/claude-sonnet-4",
-        "analysis": "anthropic/claude-sonnet-4",
+        "analysis": "openai/gpt-5.2",
     }
 
-    return task_to_model.get(task.lower(), "openai/gpt-4o")
+    return task_to_model.get(task.lower(), "openai/gpt-5.2")
 
 
 def get_model_info(model_id: str) -> Optional[Dict]:

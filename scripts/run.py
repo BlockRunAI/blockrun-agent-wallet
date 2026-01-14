@@ -7,7 +7,7 @@ Your private key never leaves your machine - only signatures are transmitted.
 
 Usage:
     python run.py "Your prompt here"
-    python run.py "Prompt" --model openai/gpt-4o
+    python run.py "Prompt" --model openai/gpt-5.2
     python run.py "Description" --image
     python run.py --balance
     python run.py --models
@@ -119,7 +119,7 @@ def get_smart_model(prompt: str, cheap: bool = False, fast: bool = False) -> str
 
     # Speed-optimized routing
     if fast:
-        return "openai/gpt-4o-mini"
+        return "openai/gpt-5-mini"
 
     if any(word in prompt_lower for word in ["code", "python", "javascript", "function", "debug"]):
         return "anthropic/claude-sonnet-4"
@@ -130,8 +130,8 @@ def get_smart_model(prompt: str, cheap: bool = False, fast: bool = False) -> str
     if any(word in prompt_lower for word in ["long", "document", "summarize", "analyze file"]):
         return "google/gemini-2.0-flash"
 
-    # Default: GPT-4o for general tasks
-    return "openai/gpt-4o"
+    # Default: GPT-5.2 for general tasks
+    return "openai/gpt-5.2"
 
 
 def cmd_chat(
@@ -648,7 +648,7 @@ More info: https://blockrun.ai
     # Chat options
     parser.add_argument(
         "--model",
-        help="Specific model ID (e.g., openai/gpt-4o, xai/grok-3)",
+        help="Specific model ID (e.g., openai/gpt-5.2, xai/grok-3)",
     )
     parser.add_argument(
         "--system", "-s",

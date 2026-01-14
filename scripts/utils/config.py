@@ -17,7 +17,7 @@ WALLET_FILE = WALLET_DIR / ".session"
 # Default configuration values
 DEFAULTS = {
     "api_url": "https://blockrun.ai/api",
-    "default_model": "openai/gpt-4o",
+    "default_model": "openai/gpt-5.2",
     "default_image_model": "google/nano-banana",
     "max_tokens": 1024,
     "timeout": 60.0,

@@ -65,8 +65,8 @@ When withdrawing, select "Base" as the network.
 
 | Amount | What You Get |
 |--------|--------------|
-| $1 | ~1,000 GPT-4o calls |
-| $5 | ~5,000 GPT-4o calls + images |
+| $1 | ~1,000 GPT-5 calls |
+| $5 | ~5,000 GPT-5 calls + images |
 | $10 | Heavy usage for weeks |
 
 **Start with $1-5.** You can always add more later.
