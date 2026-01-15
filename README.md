@@ -5,6 +5,7 @@
 ![BlockRun](assets/blockrun-agent-skill.png)
 
 [![Claude Code](https://img.shields.io/badge/Claude_Code-Skill-orange.svg)](https://github.com/anthropics/skills)
+[![Antigravity](https://img.shields.io/badge/Antigravity-Compatible-4285F4.svg)](https://antigravity.google)
 [![Models](https://img.shields.io/badge/Models-30+-green.svg)](https://blockrun.ai/models)
 [![Providers](https://img.shields.io/badge/Providers-5-blue.svg)](https://blockrun.ai)
 [![Payment](https://img.shields.io/badge/Payment-USDC_on_Base-purple.svg)](USDC_ON_BASE.md)
@@ -85,17 +86,31 @@ You fund the agent with $1-5 USDC. The agent pays for GPT, Grok, DALL-E autonomo
 pip install blockrun-llm
 ```
 
-**Step 2: Install the Claude Code skill**
+**Step 2: Install the skill for your platform**
 
-**Option A: Using Claude Code's plugin system (recommended)**
+### Claude Code
+
+**Option A: Plugin system (recommended)**
 ```
 /plugin marketplace add BlockRunAI/blockrun-claude-code-wallet
 /plugin install blockrun
 ```
 
-**Option B: Using git clone**
+**Option B: Git clone**
 ```bash
 git clone https://github.com/BlockRunAI/blockrun-claude-code-wallet ~/.claude/skills/blockrun
+```
+
+### Google Antigravity
+
+**Workspace (project-specific):**
+```bash
+git clone https://github.com/BlockRunAI/blockrun-claude-code-wallet .agent/skills/blockrun
+```
+
+**Global (all projects):**
+```bash
+git clone https://github.com/BlockRunAI/blockrun-claude-code-wallet ~/.gemini/antigravity/skills/blockrun
 ```
 
 A wallet is auto-created at `~/.blockrun/` on first use.
@@ -123,7 +138,13 @@ python -c "from blockrun_llm import generate_wallet_qr_ascii, get_wallet_address
 
 **Update to latest version:**
 ```bash
+# Claude Code
 cd ~/.claude/skills/blockrun && git pull
+
+# Antigravity (global)
+cd ~/.gemini/antigravity/skills/blockrun && git pull
+
+# SDK
 pip install --upgrade blockrun-llm
 ```
 

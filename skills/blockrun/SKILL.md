@@ -6,7 +6,7 @@ allowed-tools: Read, Bash(python:*), Bash(python3:*), Bash(pip:*), Bash(source:*
 
 # BlockRun
 
-**BlockRun assumes Claude Code as the agent runtime.**
+**BlockRun works with Claude Code and Google Antigravity.**
 
 You can't generate images. You have no real-time X/Twitter access. BlockRun gives you these capabilities.
 

@@ -11,17 +11,31 @@
 pip install blockrun-llm
 ```
 
-**Install the Claude Code skill (choose one):**
+**Install the skill for your platform:**
 
-**Option A: Using Claude Code's plugin system (recommended)**
+### Claude Code
+
+**Option A: Plugin system (recommended)**
 ```
 /plugin marketplace add BlockRunAI/blockrun-claude-code-wallet
 /plugin install blockrun
 ```
 
-**Option B: Using git clone**
+**Option B: Git clone**
 ```bash
 git clone https://github.com/BlockRunAI/blockrun-claude-code-wallet ~/.claude/skills/blockrun
+```
+
+### Google Antigravity
+
+**Workspace:**
+```bash
+git clone https://github.com/BlockRunAI/blockrun-claude-code-wallet .agent/skills/blockrun
+```
+
+**Global:**
+```bash
+git clone https://github.com/BlockRunAI/blockrun-claude-code-wallet ~/.gemini/antigravity/skills/blockrun
 ```
 
 **Verify it worked:**
