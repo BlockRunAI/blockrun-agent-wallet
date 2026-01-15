@@ -1,4 +1,4 @@
-# BlockRun: Give Your AI Agent a Wallet to Pay for GPT, Grok, DALL-E (Claude Code and Antigravity both work )
+# BlockRun: Give Your AI Agent a Budget, Not API Keys
 
 <div align="center">
 
@@ -14,80 +14,85 @@
 
 </div>
 
-**Your AI agent can't generate images. It has no real-time X data. It stops when rate limited.**
-
-BlockRun fixes this with a wallet.
+**Your agent decides what capabilities it needs. It pays for them autonomously.**
 
 ---
 
-## The Problem
+## The Idea
 
-AI coding agents (Claude Code, Antigravity) are powerful, but they have hard limits:
+What if your AI agent could acquire its own capabilities?
+
+Not "human sets up API keys, agent uses them."
+Instead: **"Human gives agent a budget, agent buys what it needs."**
 
 ```
-Without BlockRun:              With BlockRun:
-────────────────               ─────────────
-❌ No image generation         ✅ DALL-E, Nano Banana
-❌ No real-time X/Twitter      ✅ Grok has live X access
-❌ Rate limits = work stops    ✅ Overflow to DeepSeek
-❌ Single perspective          ✅ GPT second opinions
-❌ 5 API keys to manage        ✅ One wallet, all models
+Traditional:                          BlockRun:
+────────────                          ─────────
+Human manages API keys                Agent has its own wallet
+Human approves each new capability    Agent decides what to buy
+Human reviews usage after             Agent pays autonomously
+Control via: key permissions          Control via: wallet balance
 ```
 
-**BlockRun extends your AI agent with capabilities it doesn't have.**
+You fund the wallet with $1-5. Your agent handles the rest.
 
 ---
 
-## Philosophy
+## How It Works
 
-> **Give your AI agent a wallet. Let it pay for its own superpowers.**
+Your agent encounters something it can't do natively:
 
-Your AI agent is brilliant — but limited. BlockRun removes those limits.
+```
+User: "Generate a logo for my startup"
+Agent: [Realizes it can't generate images]
+Agent: [Has BlockRun wallet with $3 balance]
+Agent: [Calls DALL-E, pays $0.04]
+Agent: "Here's your logo."
+```
 
-With BlockRun, your AI agent has its own wallet. When it needs a capability it doesn't have, it pays for it — autonomously.
+No human approval needed. No API key setup. The agent decided it needed image generation and paid for it.
 
-| Need | Solution | Agent Pays |
-|------|----------|------------|
-| Generate an image | Calls DALL-E | $0.05 |
-| Real-time X data | Calls Grok | $0.002 |
-| Second opinion | Calls GPT-5.2 | $0.001 |
-| Cheaper processing | Calls DeepSeek | $0.0001 |
-
-No API keys. No human in the loop. Just an agent with a budget, acquiring capabilities on demand.
-
-We don't replace your AI agent. We give it a wallet and let it buy what it needs.
-
-**Today:** Images, real-time data, LLM routing.
-**Tomorrow:** Video generation, music creation, and every capability your agent can't do natively.
+**This is agent autonomy** — the agent acquires capabilities on demand, within a budget you control.
 
 ---
 
 ## Who Is This For?
 
-**This is for people who believe AI agents should have their own wallets.**
+| You believe... | BlockRun enables... |
+|----------------|---------------------|
+| Agents should handle their own capabilities | Agent pays for GPT/Grok/DALL-E autonomously |
+| Budgets are better than permissions | Cap spending with wallet balance, not key restrictions |
+| Less human-in-the-loop is better | No approval needed for each capability decision |
+| Agents should be more autonomous | Agent decides what tools to use, pays for them |
 
-You fund the agent with $1-5 USDC. The agent pays for GPT, Grok, DALL-E autonomously. No API keys. No human approval needed for each call.
+**If you want to manually manage every API key and approve every capability, this isn't for you.**
 
-| You Are... | You Want... | Start Here |
-|------------|-------------|------------|
-| **Developer** | Call GPT/Grok from your AI agent | [Quickstart](BULLETPROOF_QUICKSTART.md) |
-| **AI Power User** | Real-time X data, images | [Quickstart](BULLETPROOF_QUICKSTART.md) |
-| **Cost-Conscious** | 90% cheaper AI calls | [Cost Guide](#the-numbers) |
-| **MCP Enthusiast** | Prefer MCP over Skills | [MCP Server](#alternative-mcp-server) |
+This is for people building autonomous agents.
 
-**New to crypto?** [USDC Guide](USDC_ON_BASE.md) explains how to get USDC on Base (5 min setup).
+---
+
+## Quick Example
+
+```
+"blockrun generate a logo"              → Agent pays DALL-E $0.04
+"blockrun grok what's trending on X"    → Agent pays for live X data $0.002
+"blockrun GPT review this code"         → Agent pays GPT-5 $0.001
+"blockrun deepseek summarize 500 files" → Agent pays DeepSeek $0.0001/call
+```
+
+Your agent has a USDC balance. When it needs a capability, it pays. You set the budget limit by how much you fund the wallet.
 
 ---
 
 ## Install
 
-### Quick Install (One Command)
-
-Auto-detects Claude Code or Antigravity and installs everything:
+### One Command
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/BlockRunAI/blockrun-agent-wallet/main/install.sh | bash
 ```
+
+Auto-detects Claude Code or Antigravity and installs everything.
 
 ### Manual Install
 
@@ -122,130 +127,82 @@ python3 -c "from blockrun_llm import status; status()"
 
 You should see your wallet address and balance. A wallet is auto-created at `~/.blockrun/` on first use.
 
-### Update
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/BlockRunAI/blockrun-agent-wallet/main/install.sh | bash
-```
-
 ---
 
-## Usage
+## The Economics
 
-Just tell your agent:
-
-```
-"blockrun generate an image of a sunset"        → DALL-E creates it
-"blockrun grok what's trending on X"            → Grok answers with live data
-"blockrun GPT review this code"                 → AI reviewing AI
-"blockrun deepseek summarize this file"         → DeepSeek saves 90%
-```
-
-Or ask for something your agent can't do — it will suggest BlockRun:
-
-```
-User: "generate a logo for my startup"
-Agent: "I can't generate images. Want me to route to DALL-E via BlockRun?"
-User: "yes"
-→ Done
-```
-
----
-
-## What You Get
-
-| Capability | Count | Examples |
-|------------|-------|----------|
-| **AI Models** | 30+ | GPT-5, Grok, DeepSeek, Gemini, o3 |
-| **Providers** | 5 | OpenAI, xAI, Google, DeepSeek, Anthropic |
-| **Image Models** | 3 | DALL-E 3, Nano Banana, Flux |
-| **Use Cases** | 5 | Images, Real-time, Second Opinion, Cost, Overflow |
-
----
-
-## The Numbers
-
-| What | Value |
-|------|-------|
-| Setup time | **60 seconds** (vs 30+ min with API keys) |
-| API keys needed | **0** (vs 5 with traditional setup) |
-| Cost per GPT-4 call | **$0.001** |
-| Calls per $1 | **1,000** (GPT-5) / **10,000** (DeepSeek) |
-
----
-
-## How It Works
-
-```
-1. pip install blockrun-llm
-2. First use → Wallet auto-created at ~/.blockrun/
-3. Get QR code for easy funding:
-   python -c "from blockrun_llm import open_wallet_qr, get_wallet_address; open_wallet_qr(get_wallet_address())"
-4. Scan QR with MetaMask, send $1-5 USDC on Base
-5. Your agent calls any model, pays per request
-6. Your private key never leaves your machine
-```
-
-### What $1 USDC Gets You
+### What $1 Gets You
 
 | Model | Calls per $1 |
 |-------|--------------|
 | GPT-5 | ~1,000 |
 | DeepSeek | ~10,000 |
-| Grok | ~500 |
-| DALL-E images | ~20 |
+| Grok (with live X) | ~500 |
+| DALL-E images | ~25 |
 
-**$1 is enough for weeks of normal use.**
+**$1-5 USDC is enough for weeks of normal use.**
 
-**New to crypto?** Read our [USDC beginner's guide](USDC_ON_BASE.md).
+Your wallet balance = your agent's spending cap. When it runs out, the agent stops spending. Simple.
 
 ---
 
-## Use Cases
+## Fund Your Agent
 
-### Image Generation
-Your agent can't generate images natively. BlockRun routes to DALL-E.
 ```
-"blockrun generate a logo for my startup"
-```
-
-### Real-Time X/Twitter Data
-Your agent's knowledge has a cutoff. Grok has live X access.
-```
-"blockrun what's trending on X about AI agents?"
+1. pip install blockrun-llm
+2. First use → Wallet auto-created at ~/.blockrun/
+3. Get QR code:
+   python -c "from blockrun_llm import open_wallet_qr, get_wallet_address; open_wallet_qr(get_wallet_address())"
+4. Scan QR with any wallet app, send $1-5 USDC on Base
+5. Your agent now has a budget to spend autonomously
 ```
 
-### AI Reviewing AI
-Different models catch different bugs.
-```
-"blockrun GPT review this code for bugs"
-```
-
-### Cost Optimization
-DeepSeek is 10-50x cheaper for simple tasks.
-```
-"blockrun deepseek summarize these 500 files"
-```
+**New to crypto?** [USDC Guide](USDC_ON_BASE.md) — 5 minute setup.
 
 ---
 
 ## Available Models
 
-BlockRun provides access to the latest models from OpenAI, Anthropic, Google, xAI, and DeepSeek via x402 micropayments.
-
-| Model | Best For | Pricing |
-|-------|----------|---------|
-| `openai/gpt-5.2` | Second opinions, code review, general | $1.75/M in, $14/M out |
-| `openai/gpt-5-mini` | Cost-optimized tasks | $0.30/M in, $1.20/M out |
-| `openai/o4-mini` | Efficient reasoning, math | $$ |
-| `openai/o3` | Complex reasoning | $$$ |
-| `xai/grok-3` | Real-time X/Twitter data | $3/M + $0.025/source |
-| `deepseek/deepseek-chat` | Budget tasks, bulk processing | $0.14/M in, $0.28/M out |
-| `google/gemini-2.5-flash` | Long documents (1M+ tokens) | $$ |
+| Model | Best For | Cost |
+|-------|----------|------|
+| `openai/gpt-5.2` | Code review, second opinions | $0.001/call |
+| `openai/gpt-5-mini` | Cost-optimized tasks | $0.0003/call |
+| `xai/grok-3` | **Live X/Twitter data** | $0.002/call |
+| `deepseek/deepseek-chat` | Bulk processing (10x cheaper) | $0.0001/call |
 | `openai/dall-e-3` | Photorealistic images | $0.04/image |
-| `google/nano-banana` | Artistic, fast images | $0.01/image |
+| `google/nano-banana` | Fast artistic images | $0.01/image |
+| `openai/o3` | Complex reasoning | $$$ |
+| `google/gemini-2.5-flash` | Long documents (1M+ tokens) | $$ |
 
-*Prices in USDC per million tokens (M = 1,000,000 tokens)*
+30+ models across OpenAI, xAI, Google, DeepSeek, and Anthropic.
+
+---
+
+## Use Cases
+
+### Agent needs image generation
+Agent encounters a task requiring images, decides to use DALL-E, pays for it.
+```
+"blockrun dall-e generate a minimalist logo"
+```
+
+### Agent needs real-time data
+Agent needs current information, decides Grok has live X access, pays for the query.
+```
+"blockrun grok what are people saying about AI agents today?"
+```
+
+### Agent wants a second opinion
+Agent decides another model might catch different bugs, pays for the review.
+```
+"blockrun GPT review this function for edge cases"
+```
+
+### Agent needs to process bulk data cheaply
+Agent decides DeepSeek is cost-effective for simple tasks, routes accordingly.
+```
+"blockrun deepseek summarize each file in /docs"
+```
 
 ---
 
@@ -253,8 +210,37 @@ BlockRun provides access to the latest models from OpenAI, Anthropic, Google, xA
 
 - 🔐 Private key stored locally at `~/.blockrun/`
 - ✍️ Only signatures sent to server (key never transmitted)
-- 💵 Recommend keeping $5-20 balance
+- 💵 Wallet balance = spending cap (recommend $5-20)
 - 🔍 All payments verifiable on [Basescan](https://basescan.org)
+
+---
+
+## FAQ
+
+**"How is this different from API key routers?"**
+
+Most multi-provider solutions are human-managed: you set up API keys, configure permissions, review usage.
+
+BlockRun is agent-managed. You give the agent a budget (wallet balance), the agent decides what to buy, pays autonomously, and stops when the budget runs out.
+
+| Aspect | API Key Approach | BlockRun |
+|--------|------------------|----------|
+| Who manages access | Human sets up keys | Agent has wallet |
+| Control mechanism | Key permissions | Wallet balance cap |
+| Capability decisions | Human configures upfront | Agent decides at runtime |
+| Mental model | "I gave my agent API access" | "I gave my agent a budget" |
+
+**"But Gemini/GPT can already do X"**
+
+Yes! If your agent's native capabilities are enough, you don't need this. BlockRun is for when your agent encounters something it *can't* do and you want it to solve that problem autonomously.
+
+**"Why crypto/USDC?"**
+
+Micropayments. Your agent paying $0.001 for a single API call doesn't work with traditional payment rails. Crypto enables per-request payments without minimums or monthly commitments.
+
+**"What if my agent spends too much?"**
+
+Your wallet balance is the cap. Fund it with $5, the agent can't spend more than $5. When the balance is low, add more or let it stop. You're in control of the budget, not each individual decision.
 
 ---
 
@@ -281,13 +267,13 @@ Same wallet, same models, different interface.
 
 ## A Note from the Builder
 
-I built BlockRun because I got tired of juggling API keys.
+I built BlockRun because I wanted my agent to be more autonomous.
 
-Five accounts. Five billing dashboards. Five sets of credentials to rotate. For what? To use AI models that should just work together.
+Every time it needed a capability — image generation, live data, a second opinion — I had to set up another API key, another billing account, another thing to manage.
 
-So I made them work together. One wallet. All models. No keys.
+So I gave it a wallet instead. Now it handles that stuff itself.
 
-If this helps you build something cool, I'd love to hear about it.
+Fund the wallet, let the agent work. That's it.
 
 — [@bc1beat](https://x.com/bc1beat) | [@1bcMax](https://github.com/1bcMax) | [care@blockrun.ai](mailto:care@blockrun.ai)
 
