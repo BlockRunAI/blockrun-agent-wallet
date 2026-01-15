@@ -98,7 +98,13 @@ pip install blockrun-llm
 
 **Step 2: Install the skill for your platform**
 
-**Claude Code:**
+**Claude Code (Option A - Plugin Marketplace):**
+```
+/plugin marketplace add BlockRunAI/blockrun-agent-wallet
+/plugin install blockrun
+```
+
+**Claude Code (Option B - Git Clone):**
 ```bash
 git clone https://github.com/BlockRunAI/blockrun-agent-wallet ~/.claude/skills/blockrun
 ```
