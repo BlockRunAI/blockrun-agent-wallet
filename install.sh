@@ -52,12 +52,15 @@ fi
 
 # Verify installation and show status
 echo "Verifying..."
-python3 -c "
+python3 - "$SKILLS_DIR" <<'PYEOF'
 import subprocess
+import sys
 from pathlib import Path
 from blockrun_llm import setup_agent_wallet
 import qrcode
+from PIL import Image
 
+skills_dir = Path(sys.argv[1])
 client = setup_agent_wallet(silent=True)
 addr = client.get_wallet_address()
 bal = client.get_balance()
@@ -67,15 +70,31 @@ print('=' * 50)
 print('BlockRun installed!')
 print('=' * 50)
 print(f'Wallet: {addr}')
-print(f'Balance: \${bal:.2f} USDC')
+print(f'Balance: ${bal:.2f} USDC')
 print()
 
 if bal == 0:
-    # Generate and save QR code
+    # Generate QR code with high error correction (allows logo overlay)
+    qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_H, box_size=10, border=2)
+    qr.add_data(addr)
+    qr.make(fit=True)
+    qr_img = qr.make_image(fill_color='black', back_color='white').convert('RGB')
+
+    # Add BlockRun logo in center
+    logo_path = skills_dir / 'assets' / 'logo.png'
+    if logo_path.exists():
+        logo = Image.open(logo_path)
+        # Resize logo to fit in center (about 20% of QR size)
+        logo_size = qr_img.size[0] // 5
+        logo = logo.resize((logo_size, logo_size), Image.LANCZOS)
+        # Calculate center position
+        pos = ((qr_img.size[0] - logo_size) // 2, (qr_img.size[1] - logo_size) // 2)
+        qr_img.paste(logo, pos)
+
+    # Save QR code
     qr_path = Path.home() / '.blockrun' / 'wallet_qr.png'
     qr_path.parent.mkdir(parents=True, exist_ok=True)
-    qr = qrcode.make(addr)
-    qr.save(str(qr_path))
+    qr_img.save(str(qr_path))
 
     print('Fund with USDC on Base to start:')
     print(f'https://basescan.org/address/{addr}')
@@ -90,4 +109,4 @@ if bal == 0:
         pass
 
 print('=' * 50)
-"
+PYEOF
