@@ -74,9 +74,14 @@ print(f'Balance: ${bal:.2f} USDC')
 print()
 
 if bal == 0:
-    # Generate QR code with high error correction (allows logo overlay)
+    # Generate QR code with EIP-681 format for MetaMask compatibility
+    # Format: ethereum:USDC_CONTRACT@CHAIN_ID/transfer?address=RECIPIENT
+    USDC_BASE = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+    BASE_CHAIN_ID = 8453
+    eip681_uri = f"ethereum:{USDC_BASE}@{BASE_CHAIN_ID}/transfer?address={addr}"
+
     qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_H, box_size=10, border=2)
-    qr.add_data(addr)
+    qr.add_data(eip681_uri)
     qr.make(fit=True)
     qr_img = qr.make_image(fill_color='black', back_color='white').convert('RGB')
 
@@ -96,17 +101,33 @@ if bal == 0:
     qr_path.parent.mkdir(parents=True, exist_ok=True)
     qr_img.save(str(qr_path))
 
-    print('Fund with USDC on Base to start:')
-    print(f'https://basescan.org/address/{addr}')
+    print('NEXT STEP: Fund your wallet to unlock capabilities')
+    print('-' * 50)
     print()
-    print(f'QR code saved: {qr_path}')
+    print('Send USDC (Base network) to:')
+    print(f'  {addr}')
+    print()
+    print('What you get:')
+    print('  "blockrun generate image of..."    -> DALL-E ($0.04/image)')
+    print('  "blockrun what\'s trending on X"   -> Grok Live Search')
+    print('  "blockrun GPT review this code"    -> GPT-5 second opinion')
+    print()
+    print('Start with $1-5 USDC. That\'s 25-125 images or 100+ GPT calls.')
+    print()
+    print(f'QR code: {qr_path}')
+    print(f'View on Base: https://basescan.org/address/{addr}')
 
     # Open QR code
     try:
         subprocess.run(['open', str(qr_path)], check=True)
-        print('QR code opened in viewer.')
     except:
         pass
 
+else:
+    print('Ready to use! Try:')
+    print('  "blockrun generate an image of a robot"')
+    print('  "blockrun check X for @blockrunai posts"')
+
+print()
 print('=' * 50)
 PYEOF
