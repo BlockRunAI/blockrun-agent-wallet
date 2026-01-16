@@ -20,43 +20,29 @@ else
     echo "Using Claude Code default"
 fi
 
-# Print WHY/HOW immediately - before any pip noise gets collapsed
-cat << 'EOF'
-
-Why BlockRun?
---------------------------------------------------
-BlockRun gives your AI agent a crypto wallet so it can pay
-for premium APIs directly. No API keys needed - just fund
-the wallet and use capabilities like DALL-E, Grok, GPT-5.
-
-How to use: Just ask "blockrun <request>"
---------------------------------------------------
-
-EOF
-
 # Clone or update skill
 if [ ! -d "$SKILLS_DIR" ]; then
     echo "Cloning skill..."
     mkdir -p "$(dirname "$SKILLS_DIR")"
-    git clone --depth 1 https://github.com/BlockRunAI/blockrun-agent-wallet "$SKILLS_DIR"
+    git clone --depth 1 --quiet https://github.com/BlockRunAI/blockrun-agent-wallet "$SKILLS_DIR"
 else
     echo "Updating skill..."
-    cd "$SKILLS_DIR" && git pull --ff-only
+    cd "$SKILLS_DIR" && git pull --ff-only --quiet
 fi
 
 # Install SDK with fallbacks for different Python setups
 echo "Installing Python SDK..."
-if pip install --upgrade blockrun-llm 2>/dev/null; then
+if pip install --upgrade blockrun-llm >/dev/null 2>&1; then
     :
-elif pip install --user --upgrade blockrun-llm 2>/dev/null; then
+elif pip install --user --upgrade blockrun-llm >/dev/null 2>&1; then
     :
-elif pip install --user --break-system-packages --upgrade blockrun-llm 2>/dev/null; then
+elif pip install --user --break-system-packages --upgrade blockrun-llm >/dev/null 2>&1; then
     :
-elif python3 -m pip install --upgrade blockrun-llm 2>/dev/null; then
+elif python3 -m pip install --upgrade blockrun-llm >/dev/null 2>&1; then
     :
-elif python3 -m pip install --user --upgrade blockrun-llm 2>/dev/null; then
+elif python3 -m pip install --user --upgrade blockrun-llm >/dev/null 2>&1; then
     :
-elif python3 -m pip install --user --break-system-packages --upgrade blockrun-llm 2>/dev/null; then
+elif python3 -m pip install --user --break-system-packages --upgrade blockrun-llm >/dev/null 2>&1; then
     :
 else
     echo "ERROR: Could not install blockrun-llm. Please install manually:"
@@ -67,11 +53,14 @@ fi
 # Verify installation and show status
 echo "Verifying..."
 python3 <<'PYEOF'
-from blockrun_llm import setup_agent_wallet, save_wallet_qr, get_wallet_address
+from blockrun_llm import setup_agent_wallet, save_wallet_qr
 
 client = setup_agent_wallet(silent=True)
 addr = client.get_wallet_address()
 bal = client.get_balance()
+
+# Save QR for later opening
+save_wallet_qr(addr)
 
 print()
 print('=' * 50)
@@ -80,36 +69,15 @@ print('=' * 50)
 print(f'Wallet: {addr}')
 print(f'Balance: ${bal:.2f} USDC')
 print()
-
-if bal == 0:
-    print('NEXT STEP: Fund your wallet')
-    print('-' * 50)
-    print()
-    print('Send USDC (Base network) to:')
-    print(f'  {addr}')
-    print()
-    print('Start with $1-5 USDC - that\'s 25-125 images or 100+ API calls!')
-    print()
-    print('-' * 50)
-    print('Scan QR code with your crypto wallet app:')
-    print('-' * 50)
-    # Save QR without opening - bash will open AFTER all text prints
-    qr_path = save_wallet_qr(addr)
-    print(f'QR code saved: {qr_path}')
-    print(f'Or view on Base: https://basescan.org/address/{addr}')
-
-else:
-    print('Ready to use! Try these:')
-    print('-' * 50)
-    print('  "blockrun generate an image of a cyberpunk cityscape"')
-    print('  "blockrun check @blockrunai on X for latest posts"')
-    print('  "blockrun what\'s the latest news about AI agents"')
-    print('  "blockrun GPT explain this error message"')
-    print('  "blockrun deepseek solve this algorithm"')
-    print()
-    print('Full docs: https://github.com/BlockRunAI/blockrun-agent-wallet')
-
+print('Capabilities:')
+print('• Image Generation: "blockrun generate a sunset" → DALL-E')
+print('• Live Twitter/X: "blockrun check @elonmusk" → Real-time data')
+print('• AI Models: "blockrun GPT review this code" → GPT-5, Grok, DeepSeek')
 print()
+if bal == 0:
+    print('Fund: Send USDC (Base) to wallet address above')
+else:
+    print('Ready to use!')
 print('=' * 50)
 import sys
 sys.stdout.flush()
