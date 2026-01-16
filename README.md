@@ -206,6 +206,31 @@ Agent decides DeepSeek is cost-effective for simple tasks, routes accordingly.
 
 ---
 
+## Antigravity Users: Why BlockRun?
+
+Hit Antigravity's limits? BlockRun keeps you working.
+
+| Your Problem | BlockRun Solution |
+|--------------|-------------------|
+| **Credits ran out after 20 mins** | Your wallet keeps working when Antigravity stops. Route to DeepSeek ($0.0001/call) or GPT while credits refresh. |
+| **Stuck in a refactoring loop** | Call GPT or Claude to break the cycle with a fresh perspective. |
+| **Gemini missed edge cases** | Get a second opinion from another model before shipping. |
+
+```
+# When Antigravity credits are exhausted:
+"blockrun deepseek continue refactoring this file"
+
+# When stuck in a loop:
+"blockrun GPT review what Gemini just did and suggest a fix"
+
+# When you need a code review:
+"blockrun claude check this function for edge cases Gemini might have missed"
+```
+
+Your BlockRun wallet doesn't have a 5-hour refresh timer. Fund it once, use it whenever Antigravity can't.
+
+---
+
 ## Security
 
 - 🔐 Private key stored locally at `~/.blockrun/`
@@ -241,6 +266,14 @@ Micropayments. Your agent paying $0.001 for a single API call doesn't work with 
 **"What if my agent spends too much?"**
 
 Your wallet balance is the cap. Fund it with $5, the agent can't spend more than $5. When the balance is low, add more or let it stop. You're in control of the budget, not each individual decision.
+
+**"I ran out of Antigravity credits. Can BlockRun help?"**
+
+Yes. Your BlockRun wallet is independent of Antigravity's credit system. When Antigravity stops, route your next task through BlockRun to keep working. DeepSeek costs $0.0001/call — you can do thousands of calls for pennies while waiting for Antigravity credits to refresh.
+
+**"Antigravity keeps refactoring in circles. What do I do?"**
+
+Call an external model to break the loop. GPT or Claude can review what Gemini did and suggest a different approach. Sometimes a fresh perspective from a different model is all you need.
 
 ---
 
