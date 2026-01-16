@@ -74,14 +74,9 @@ print(f'Balance: ${bal:.2f} USDC')
 print()
 
 if bal == 0:
-    # Generate QR code with EIP-681 format for MetaMask compatibility
-    # Format: ethereum:USDC_CONTRACT@CHAIN_ID/transfer?address=RECIPIENT
-    USDC_BASE = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
-    BASE_CHAIN_ID = 8453
-    eip681_uri = f"ethereum:{USDC_BASE}@{BASE_CHAIN_ID}/transfer?address={addr}"
-
+    # Generate QR code with plain address (works with Base, Coinbase wallets)
     qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_H, box_size=10, border=2)
-    qr.add_data(eip681_uri)
+    qr.add_data(addr)
     qr.make(fit=True)
     qr_img = qr.make_image(fill_color='black', back_color='white').convert('RGB')
 
