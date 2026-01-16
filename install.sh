@@ -20,6 +20,20 @@ else
     echo "Using Claude Code default"
 fi
 
+# Print WHY/HOW immediately - before any pip noise gets collapsed
+cat << 'EOF'
+
+Why BlockRun?
+--------------------------------------------------
+BlockRun gives your AI agent a crypto wallet so it can pay
+for premium APIs directly. No API keys needed - just fund
+the wallet and use capabilities like DALL-E, Grok, GPT-5.
+
+How to use: Just ask "blockrun <request>"
+--------------------------------------------------
+
+EOF
+
 # Clone or update skill
 if [ ! -d "$SKILLS_DIR" ]; then
     echo "Cloning skill..."
@@ -68,23 +82,6 @@ print(f'Balance: ${bal:.2f} USDC')
 print()
 
 if bal == 0:
-    print('Why BlockRun?')
-    print('-' * 50)
-    print('BlockRun gives your AI agent a crypto wallet so it can pay')
-    print('for premium APIs directly. No API keys needed - just fund')
-    print('the wallet and start using capabilities like DALL-E, Grok, GPT-5.')
-    print()
-    print('How to use:')
-    print('-' * 50)
-    print('Just ask your AI to use "blockrun" - it knows the skill.')
-    print('Examples:')
-    print('  "blockrun generate image of a sunset"       -> DALL-E ($0.04)')
-    print('  "blockrun check @blockrunai on X"           -> Live Twitter data')
-    print('  "blockrun what\'s trending on X right now"  -> Grok real-time')
-    print('  "blockrun GPT review this code"             -> GPT-5 second opinion')
-    print('  "blockrun deepseek solve this math problem" -> DeepSeek R1')
-    print()
-    print('-' * 50)
     print('NEXT STEP: Fund your wallet')
     print('-' * 50)
     print()
