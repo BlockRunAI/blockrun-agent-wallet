@@ -1,7 +1,7 @@
 ---
 name: blockrun
 description: Use when user needs capabilities Claude lacks (image generation, real-time X/Twitter data) or explicitly requests external models ("blockrun", "use grok", "use gpt", "dall-e", "deepseek"). For Antigravity users, also use when credits are exhausted, stuck in refactoring loops, or need a second opinion on Gemini's code.
-allowed-tools: Read, Bash(python:*), Bash(python3:*), Bash(pip:*), Bash(source:*)
+allowed-tools: Read, Bash(python:*), Bash(python3:*), Bash(pip:*), Bash(source:*), Bash(open:*), Bash(xdg-open:*)
 ---
 
 # BlockRun
@@ -9,6 +9,8 @@ allowed-tools: Read, Bash(python:*), Bash(python3:*), Bash(pip:*), Bash(source:*
 **BlockRun works with Claude Code and Google Antigravity.**
 
 You can't generate images. You have no real-time X/Twitter access. BlockRun gives you these capabilities.
+
+> **CRITICAL: Always run ONE Python script per task.** Never run multiple separate Python commands - combine all operations into a single script. This avoids multiple permission prompts and provides a better user experience.
 
 ## Philosophy
 
@@ -75,6 +77,7 @@ Users will say things like:
 | "what's the latest news about AI agents?" | Suggest Grok (you lack real-time data) |
 | "generate a logo for my startup" | Suggest DALL-E (you can't generate images) |
 | "blockrun check my balance" | Show wallet balance via `get_balance()` |
+| "blockrun show qr code" | Show funding QR code (save to file, open in browser) |
 | "blockrun deepseek summarize this file" | Call DeepSeek for cost savings |
 
 ### Antigravity User Prompts
@@ -88,28 +91,32 @@ Users will say things like:
 
 ## Wallet & Balance
 
-Use `setup_agent_wallet()` to auto-create a wallet and get a client. This shows the QR code and welcome message on first use.
+**IMPORTANT: Run ONE script per task.** Do not run multiple Python commands separately - combine them into a single script to avoid multiple permission prompts.
 
-**Initialize client (always start with this):**
+**Check balance (single script):**
 ```python
 from blockrun_llm import setup_agent_wallet
-
-client = setup_agent_wallet()  # Auto-creates wallet, shows QR if new
-```
-
-**Check balance (when user asks "show balance", "check wallet", etc.):**
-```python
-balance = client.get_balance()  # On-chain USDC balance
-print(f"Balance: ${balance:.2f} USDC")
+client = setup_agent_wallet()
 print(f"Wallet: {client.get_wallet_address()}")
+print(f"Balance: ${client.get_balance():.2f} USDC")
 ```
 
-**Show QR code for funding:**
+**Show QR code for funding (single script):**
 ```python
-from blockrun_llm import generate_wallet_qr_ascii, get_wallet_address
+import subprocess
+from pathlib import Path
+from blockrun_llm import get_wallet_address
+import qrcode
 
-# ASCII QR for terminal display
-print(generate_wallet_qr_ascii(get_wallet_address()))
+addr = get_wallet_address()
+qr = qrcode.make(addr)
+qr_path = Path.home() / ".blockrun" / "wallet_qr.png"
+qr_path.parent.mkdir(parents=True, exist_ok=True)
+qr.save(str(qr_path))
+subprocess.run(["open", str(qr_path)])
+print(f"QR saved: {qr_path}")
+print(f"Address: {addr}")
+print(f"Fund: https://basescan.org/address/{addr}")
 ```
 
 ## SDK Usage
@@ -273,23 +280,30 @@ All LLM costs are per million tokens (M = 1,000,000 tokens).
 
 ## Setup & Funding
 
-**Wallet location:** `$HOME/.blockrun/.session` (e.g., `/Users/username/.blockrun/.session`)
+**Wallet location:** `$HOME/.blockrun/.session`
 
-**First-time setup:**
-1. Wallet auto-creates when `setup_agent_wallet()` is called
-2. Check wallet and balance:
+**First-time setup (single script - does everything):**
 ```python
+import subprocess
+from pathlib import Path
 from blockrun_llm import setup_agent_wallet
-client = setup_agent_wallet()
-print(f"Wallet: {client.get_wallet_address()}")
-print(f"Balance: ${client.get_balance():.2f} USDC")
-```
-3. Fund wallet with $1-5 USDC on Base network
+import qrcode
 
-**Show QR code for funding (ASCII for terminal):**
-```python
-from blockrun_llm import generate_wallet_qr_ascii, get_wallet_address
-print(generate_wallet_qr_ascii(get_wallet_address()))
+# Setup wallet and show status
+client = setup_agent_wallet()
+addr = client.get_wallet_address()
+balance = client.get_balance()
+
+print(f"Wallet: {addr}")
+print(f"Balance: ${balance:.2f} USDC")
+
+# Generate and open QR code
+qr = qrcode.make(addr)
+qr_path = Path.home() / ".blockrun" / "wallet_qr.png"
+qr_path.parent.mkdir(parents=True, exist_ok=True)
+qr.save(str(qr_path))
+subprocess.run(["open", str(qr_path)])
+print(f"QR code opened. Fund with $1-5 USDC on Base.")
 ```
 
 ## Troubleshooting
