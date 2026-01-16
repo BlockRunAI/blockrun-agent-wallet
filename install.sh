@@ -53,7 +53,7 @@ fi
 # Verify installation and show status
 echo "Verifying..."
 python3 <<'PYEOF'
-from blockrun_llm import setup_agent_wallet, open_wallet_qr, get_wallet_address
+from blockrun_llm import setup_agent_wallet, save_wallet_qr, get_wallet_address
 
 client = setup_agent_wallet(silent=True)
 addr = client.get_wallet_address()
@@ -68,8 +68,16 @@ print(f'Balance: ${bal:.2f} USDC')
 print()
 
 if bal == 0:
-    print('What you can do with BlockRun:')
+    print('Why BlockRun?')
     print('-' * 50)
+    print('BlockRun gives your AI agent a crypto wallet so it can pay')
+    print('for premium APIs directly. No API keys needed - just fund')
+    print('the wallet and start using capabilities like DALL-E, Grok, GPT-5.')
+    print()
+    print('How to use:')
+    print('-' * 50)
+    print('Just ask your AI to use "blockrun" - it knows the skill.')
+    print('Examples:')
     print('  "blockrun generate image of a sunset"       -> DALL-E ($0.04)')
     print('  "blockrun check @blockrunai on X"           -> Live Twitter data')
     print('  "blockrun what\'s trending on X right now"  -> Grok real-time')
@@ -88,8 +96,8 @@ if bal == 0:
     print('-' * 50)
     print('Scan QR code with your crypto wallet app:')
     print('-' * 50)
-    # Generate QR AFTER showing all context
-    qr_path = open_wallet_qr(addr)
+    # Save QR without opening - bash will open AFTER all text prints
+    qr_path = save_wallet_qr(addr)
     print(f'QR code saved: {qr_path}')
     print(f'Or view on Base: https://basescan.org/address/{addr}')
 
@@ -107,3 +115,8 @@ else:
 print()
 print('=' * 50)
 PYEOF
+
+# Open QR code AFTER all text is printed
+if [ -f "$HOME/.blockrun/qr.png" ]; then
+    open "$HOME/.blockrun/qr.png" 2>/dev/null || xdg-open "$HOME/.blockrun/qr.png" 2>/dev/null || true
+fi
