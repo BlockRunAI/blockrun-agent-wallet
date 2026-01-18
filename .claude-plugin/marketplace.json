@@ -7,8 +7,9 @@
   "plugins": [
     {
       "name": "blockrun",
-      "source": "./skills/blockrun",
-      "description": "Give Claude Code a wallet to pay for GPT, Grok, DALL-E and 30+ AI models via USDC micropayments"
+      "description": "Give Claude a wallet for image generation, real-time X/Twitter, and 30+ AI models",
+      "version": "1.0.0",
+      "source": "./"
     }
   ]
 }

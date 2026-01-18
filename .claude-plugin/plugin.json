@@ -1,0 +1,13 @@
+{
+  "name": "blockrun",
+  "version": "1.0.0",
+  "description": "Give Claude a wallet to access capabilities it lacks - image generation, real-time X/Twitter data, and 30+ AI models via micropayments",
+  "author": {
+    "name": "BlockRun",
+    "email": "care@blockrun.ai"
+  },
+  "homepage": "https://blockrun.ai",
+  "repository": "https://github.com/BlockRunAI/blockrun-agent-wallet",
+  "license": "MIT",
+  "keywords": ["blockrun", "image-generation", "dall-e", "grok", "x402", "micropayments"]
+}
