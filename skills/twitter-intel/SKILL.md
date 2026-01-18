@@ -5,6 +5,8 @@ description: Real-time X/Twitter intelligence - analyze accounts, track topics, 
 
 # Twitter Intel
 
+**Prerequisite:** `pip install blockrun-llm`
+
 Get real-time X/Twitter intelligence without API keys. Analyze accounts, track trending topics, and monitor keywords with live data from X.
 
 ## When to Use This Skill
