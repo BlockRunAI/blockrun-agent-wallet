@@ -86,40 +86,26 @@ Your agent has a USDC balance. When it needs a capability, it pays. You set the 
 
 ## Install
 
-### One Command
+### Step 1: Install the Python SDK
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/BlockRunAI/blockrun-agent-wallet/main/install.sh | bash
-```
-
-Auto-detects Claude Code or Antigravity and installs everything.
-
-### Manual Install
-
-**Step 1: Install the Python SDK**
 ```bash
 pip install blockrun-llm
 ```
 
-**Step 2: Install the skill for your platform**
+### Step 2: Install the Claude Code plugin
 
-**Claude Code (Option A - Plugin Marketplace):**
+**Option A - Plugin Marketplace:**
 ```
 /plugin marketplace add BlockRunAI/blockrun-agent-wallet
 /plugin install blockrun
 ```
 
-**Claude Code (Option B - Git Clone):**
+**Option B - Git Clone:**
 ```bash
-git clone https://github.com/BlockRunAI/blockrun-agent-wallet ~/.claude/skills/blockrun
+git clone https://github.com/BlockRunAI/blockrun-agent-wallet ~/.claude/plugins/blockrun
 ```
 
-**Antigravity (global):**
-```bash
-git clone https://github.com/BlockRunAI/blockrun-agent-wallet ~/.gemini/antigravity/skills/blockrun
-```
-
-### Verify
+### Step 3: Verify
 
 ```bash
 python3 -c "from blockrun_llm import status; status()"
