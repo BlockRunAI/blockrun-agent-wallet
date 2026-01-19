@@ -9,5 +9,5 @@
   "homepage": "https://blockrun.ai",
   "repository": "https://github.com/BlockRunAI/blockrun-agent-wallet",
   "license": "MIT",
-  "keywords": ["blockrun", "image-generation", "dall-e", "grok", "x402", "micropayments"]
+  "keywords": ["blockrun", "image-generation", "dall-e", "grok", "gpt", "deepseek", "x402", "micropayments", "ai-routing"]
 }
