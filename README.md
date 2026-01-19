@@ -86,15 +86,21 @@ Your agent has a USDC balance. When it needs a capability, it pays. You set the 
 
 ## Install
 
-### One Command
+### Recommended: MCP Server (Claude Code)
+
+The easiest way to use BlockRun with Claude Code:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/BlockRunAI/blockrun-agent-wallet/main/install.sh | bash
+claude mcp add blockrun -- npx @blockrun/mcp
 ```
 
-Auto-detects Claude Code or Antigravity and installs everything.
+That's it. A wallet is automatically created for you.
 
-### Manual Install
+See [@blockrun/mcp](https://github.com/blockrunai/blockrun-mcp) for full documentation.
+
+### Alternative: Python Skill
+
+For more control or Antigravity compatibility:
 
 **Step 1: Install the Python SDK**
 ```bash
@@ -103,13 +109,7 @@ pip install blockrun-llm
 
 **Step 2: Install the skill for your platform**
 
-**Claude Code (Option A - Plugin Marketplace):**
-```
-/plugin marketplace add BlockRunAI/blockrun-agent-wallet
-/plugin install blockrun
-```
-
-**Claude Code (Option B - Git Clone):**
+**Claude Code:**
 ```bash
 git clone https://github.com/BlockRunAI/blockrun-agent-wallet ~/.claude/skills/blockrun
 ```
@@ -277,11 +277,14 @@ Call an external model to break the loop. GPT or Claude can review what Gemini d
 
 ---
 
-## Alternative: MCP Server
+## MCP vs Skill
 
-Prefer MCP over Skills? See [@blockrun/mcp](https://github.com/blockrunai/blockrun-mcp).
+| Method | Best For |
+|--------|----------|
+| **MCP** (`claude mcp add blockrun -- npx @blockrun/mcp`) | Claude Code users - just works |
+| **Skill** (this repo) | Antigravity, more control, budget tracking |
 
-Same wallet, same models, different interface.
+Both use the same wallet at `~/.blockrun/` and access the same models.
 
 ---
 

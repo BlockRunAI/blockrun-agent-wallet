@@ -18,6 +18,7 @@ Environment:
 """
 
 import argparse
+import base64
 import json
 import os
 import re
@@ -314,8 +315,17 @@ def cmd_image(
             filepath = os.path.join(os.getcwd(), filename)
 
             try:
-                # Download and save
-                urllib.request.urlretrieve(image_url, filepath)
+                # Handle base64 data URLs vs HTTP URLs
+                if image_url.startswith('data:image/'):
+                    # Extract and decode base64 data
+                    # Format: data:image/png;base64,<data>
+                    header, encoded_data = image_url.split(',', 1)
+                    with open(filepath, 'wb') as f:
+                        f.write(base64.b64decode(encoded_data))
+                else:
+                    # HTTP URL - download normally
+                    urllib.request.urlretrieve(image_url, filepath)
+
                 branding.print_success(f"Saved to: {filepath}")
 
                 # Try to open with system viewer
@@ -327,9 +337,10 @@ def cmd_image(
                     os.startfile(filepath)
 
             except Exception as e:
-                # Fallback to just showing URL
-                print(f"\n  URL: {image_url}")
-                print(f"  (Could not save locally: {e})\n")
+                # Don't dump the full URL (could be huge base64 string)
+                url_preview = image_url[:80] + "..." if len(image_url) > 80 else image_url
+                branding.print_error(f"Could not save image: {e}")
+                print(f"  URL preview: {url_preview}\n")
         else:
             branding.print_error("No image data returned")
 
