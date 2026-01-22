@@ -11,6 +11,67 @@ allowed-tools: Read, Bash(python:*), Bash(python3:*), Bash(pip:*), Bash(source:*
 
 You can't generate images. You have no real-time X/Twitter access. BlockRun gives you these capabilities.
 
+## How to Invoke
+
+Users can trigger this skill in two ways:
+- **Slash command:** `/blockrun <request>` (e.g., `/blockrun use grok to analyze @elonmusk`)
+- **Keyword in message:** Include "blockrun" or model names (e.g., "blockrun grok find trending crypto", "use grok to check...")
+
+Common triggers: `blockrun`, `use grok`, `use gpt`, `dall-e`, `deepseek`, `generate image`
+
+## CRITICAL: Balance Check Before API Calls
+
+**You MUST check wallet balance and get user confirmation BEFORE making any paid API call.**
+
+### Step 1: Check Balance First
+```python
+from blockrun_llm import setup_agent_wallet
+
+client = setup_agent_wallet()
+balance = client.get_balance()
+address = client.get_wallet_address()
+```
+
+### Step 2: Estimate Cost & Ask User
+Before calling any model, show the user:
+```
+📊 Wallet Status
+   Address: 0x413c...1DC3
+   Balance: $0.39 USDC
+
+💰 Estimated Cost
+   Grok + Live Search (10 sources): ~$0.25
+
+Proceed? (Balance after: ~$0.14)
+```
+
+Wait for user confirmation before making the API call.
+
+### Step 3: Handle Insufficient Balance
+If balance is too low, show a friendly message:
+```
+⚠️ Insufficient balance for this operation.
+
+Current: $0.05 USDC
+Required: ~$0.25 (Grok + Live Search)
+
+To fund your wallet, send USDC on Base to:
+0x413c7846194698829F8605C631c06c91B7B71DC3
+
+Would you like to:
+1. Use fewer search sources (~$0.13 for 5 sources)
+2. Try a cheaper model (DeepSeek ~$0.001)
+```
+
+### Cost Reference for Confirmation
+| Operation | Estimated Cost |
+|-----------|---------------|
+| Grok + Live Search (10 sources) | ~$0.25 |
+| Grok + Live Search (5 sources) | ~$0.13 |
+| GPT-5.2 query (typical) | ~$0.02 |
+| DeepSeek query | ~$0.001 |
+| DALL-E image | $0.04 |
+
 ## Output Guidelines
 
 **Keep it clean.** The user wants results, not process.
@@ -324,6 +385,21 @@ print(generate_wallet_qr_ascii(get_wallet_address()))
 
 ## Troubleshooting
 
+**PaymentError: Payment was rejected**
+→ NEVER show raw stack traces. Always check balance first (see "CRITICAL: Balance Check" section above).
+If you get this error, show a user-friendly message:
+```
+⚠️ Payment failed - insufficient balance.
+
+Current balance: $0.05 USDC
+Wallet: 0x413c7846194698829F8605C631c06c91B7B71DC3
+
+Options:
+1. Fund wallet with USDC on Base network
+2. Use fewer search sources to reduce cost
+3. Try a cheaper model (DeepSeek)
+```
+
 **"Grok says it has no real-time access"**
 → You forgot to enable Live Search. Add `search=True`:
 ```python
@@ -332,6 +408,33 @@ response = client.chat("xai/grok-3", "What's trending?", search=True)
 
 **Module not found**
 → Install the SDK: `pip install blockrun-llm`
+
+## Error Handling Pattern
+
+Always wrap API calls with balance checking:
+```python
+from blockrun_llm import setup_agent_wallet
+from blockrun_llm.types import PaymentError
+
+client = setup_agent_wallet()
+balance = client.get_balance()
+estimated_cost = 0.25  # Grok + Live Search
+
+# Pre-flight check
+if balance < estimated_cost:
+    print(f"⚠️ Insufficient balance: ${balance:.2f} USDC")
+    print(f"Required: ~${estimated_cost:.2f}")
+    print(f"Wallet: {client.get_wallet_address()}")
+    # Ask user what to do
+else:
+    # User confirmed, make the call
+    try:
+        response = client.chat("xai/grok-3", "Query", search=True)
+        print(response)
+        print(f"\nCost: ${client.get_spending()['total_usd']:.2f}")
+    except PaymentError:
+        print("⚠️ Payment failed. Balance may have changed.")
+```
 
 ## Updates
 
