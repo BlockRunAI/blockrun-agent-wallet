@@ -88,41 +88,24 @@ Your agent has a USDC balance. When it needs a capability, it pays. You set the 
 
 ---
 
-## Install
-
-### Recommended: MCP Server (Claude Code)
-
-The easiest way to use BlockRun with Claude Code:
+## Install (One Command)
 
 ```bash
-claude mcp add blockrun -- npx @blockrun/mcp
+curl -fsSL https://raw.githubusercontent.com/BlockRunAI/blockrun-agent-wallet/main/install.sh | bash
 ```
 
-That's it. A wallet is automatically created for you.
+Auto-detects your platform (Claude Code or Antigravity), installs the SDK, creates a wallet, and shows a QR code to fund it.
 
-See [@blockrun/mcp](https://github.com/blockrunai/blockrun-mcp) for full documentation.
+### Other Install Methods
 
-### Alternative: Python Skill
-
-For more control or Antigravity compatibility:
-
-**Step 1: Install the Python SDK**
-```bash
-pip install blockrun-llm              # Base chain (EVM/USDC)
-pip install blockrun-llm[solana]      # Base + Solana payments
-```
-
-**Step 2: Install the skill for your platform**
-
-**Claude Code:**
-```bash
-git clone https://github.com/BlockRunAI/blockrun-agent-wallet ~/.claude/skills/blockrun
-```
-
-**Antigravity (global):**
-```bash
-git clone https://github.com/BlockRunAI/blockrun-agent-wallet ~/.gemini/antigravity/skills/blockrun
-```
+- **MCP Server (Claude Code):** `claude mcp add blockrun -- npx @blockrun/mcp` — see [@blockrun/mcp](https://github.com/blockrunai/blockrun-mcp)
+- **Manual Python Skill:**
+  ```bash
+  pip install blockrun-llm              # Base chain (EVM/USDC)
+  pip install blockrun-llm[solana]      # Base + Solana payments
+  git clone https://github.com/BlockRunAI/blockrun-agent-wallet ~/.claude/skills/blockrun
+  ```
+- **Antigravity:** `git clone https://github.com/BlockRunAI/blockrun-agent-wallet ~/.gemini/antigravity/skills/blockrun`
 
 ### Verify
 
