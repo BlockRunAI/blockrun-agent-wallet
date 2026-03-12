@@ -75,8 +75,11 @@ This is for people building autonomous agents.
 
 ```
 "blockrun generate a logo"              → Agent pays DALL-E $0.04
-"blockrun grok what's trending on X"    → Agent pays for live X data $0.002
+"blockrun edit this image"              → Agent pays GPT Image $0.03
+"blockrun grok what's trending on X"    → Agent pays for live X data $0.25
+"blockrun lookup @elonmusk on X"        → Agent pays AttentionVC $0.02
 "blockrun GPT review this code"         → Agent pays GPT-5 $0.001
+"blockrun search latest AI news"        → Agent pays for web search $0.25
 "blockrun deepseek summarize 500 files" → Agent pays DeepSeek $0.0001/call
 ```
 
@@ -176,6 +179,23 @@ Your wallet balance = your agent's spending cap. When it runs out, the agent sto
 
 30+ models across OpenAI, xAI, Google, DeepSeek, and Anthropic.
 
+### X/Twitter Data (Powered by AttentionVC)
+
+Direct X/Twitter data access — no Grok needed:
+
+| Endpoint | Description | Cost |
+|----------|-------------|------|
+| `x_user_lookup()` | Batch user profile lookup | $0.002/user (min $0.02) |
+| `x_followers()` | Get user's followers | $0.05/page (~200 accounts) |
+| `x_followings()` | Get user's followings | $0.05/page (~200 accounts) |
+
+### Other New Endpoints
+
+| Endpoint | Description | Cost |
+|----------|-------------|------|
+| `search()` | Standalone web + X + news search | ~$0.25 (10 sources) |
+| `image_edit()` | Edit images with text prompts (img2img) | $0.02-0.04/image |
+
 ---
 
 ## Use Cases
@@ -190,6 +210,25 @@ Agent encounters a task requiring images, decides to use DALL-E, pays for it.
 Agent needs current information, decides Grok has live X access, pays for the query.
 ```
 "blockrun grok what are people saying about AI agents today?"
+```
+
+### Agent needs X/Twitter user data
+Agent needs profile data or follower lists, uses the cheaper direct endpoints.
+```
+"blockrun lookup @elonmusk @blockrunai on X"
+"blockrun get followers of @blockrunai"
+```
+
+### Agent needs to search the web
+Agent needs current info without a full chat model, uses standalone search.
+```
+"blockrun search latest AI agent frameworks 2026"
+```
+
+### Agent needs to edit an image
+Agent has an image and wants to modify it with a text prompt.
+```
+"blockrun edit this image to make the sky purple"
 ```
 
 ### Agent wants a second opinion
