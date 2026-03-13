@@ -41,63 +41,92 @@ fi
 echo "Using Python: $("$PYTHON" --version 2>&1) ($PYTHON)"
 
 # ── Detect platform and set skills path ───────────────────────────
+# Install to ALL detected platforms so both Claude Code and Antigravity work
+SKILLS_DIRS=()
+
+if [ -d "$HOME/.claude" ]; then
+    SKILLS_DIRS+=("$HOME/.claude/skills/blockrun")
+fi
+
 if [ -d "$HOME/.gemini/antigravity" ]; then
-    SKILLS_DIR="$HOME/.gemini/antigravity/skills/blockrun"
-    echo "Detected Antigravity (global)"
-elif [ -d "$HOME/.claude" ]; then
-    SKILLS_DIR="$HOME/.claude/skills/blockrun"
-    echo "Detected Claude Code"
-else
-    # Default to Claude Code
-    SKILLS_DIR="$HOME/.claude/skills/blockrun"
+    SKILLS_DIRS+=("$HOME/.gemini/antigravity/skills/blockrun")
+fi
+
+# If neither detected, default to Claude Code
+if [ ${#SKILLS_DIRS[@]} -eq 0 ]; then
     mkdir -p "$HOME/.claude/skills"
-    echo "Using Claude Code default"
+    SKILLS_DIRS+=("$HOME/.claude/skills/blockrun")
 fi
 
-# Clone or update skill
-if [ ! -d "$SKILLS_DIR" ]; then
-    echo "Cloning skill..."
-    mkdir -p "$(dirname "$SKILLS_DIR")"
-    git clone --depth 1 --quiet https://github.com/BlockRunAI/blockrun-agent-skill "$SKILLS_DIR"
-else
-    echo "Updating skill..."
-    cd "$SKILLS_DIR" && git pull --ff-only --quiet
-fi
+# Clone or update skill in each target
+FIRST_DIR=""
+for SKILLS_DIR in "${SKILLS_DIRS[@]}"; do
+    PLATFORM=$(echo "$SKILLS_DIR" | grep -q ".gemini" && echo "Antigravity" || echo "Claude Code")
 
-# ── Install SDK from PyPI ─────────────────────────────────────────
+    if [ -z "$FIRST_DIR" ]; then
+        # First target: clone or update normally
+        if [ ! -d "$SKILLS_DIR" ]; then
+            echo "Installing skill ($PLATFORM)..."
+            mkdir -p "$(dirname "$SKILLS_DIR")"
+            git clone --depth 1 --quiet https://github.com/BlockRunAI/blockrun-agent-skill "$SKILLS_DIR"
+        else
+            echo "Updating skill ($PLATFORM)..."
+            cd "$SKILLS_DIR" && git pull --ff-only --quiet
+        fi
+        FIRST_DIR="$SKILLS_DIR"
+    else
+        # Additional targets: symlink to first to avoid duplicate clones
+        if [ ! -e "$SKILLS_DIR" ]; then
+            echo "Linking skill ($PLATFORM)..."
+            mkdir -p "$(dirname "$SKILLS_DIR")"
+            ln -sf "$FIRST_DIR" "$SKILLS_DIR"
+        else
+            echo "Skill already present ($PLATFORM)"
+        fi
+    fi
+done
+
+# ── Install SDK from PyPI (quiet, verbose only on failure) ────────
 if [ "$CHAIN" = "solana" ]; then
     PKG="blockrun-llm[solana]>=0.8.0"
 else
     PKG="blockrun-llm>=0.8.0"
 fi
-echo "Installing Python SDK ($PKG) from PyPI..."
+echo "Installing Python SDK..."
 
 INSTALLED=false
+PIP_LOG=$(mktemp)
 
 # Strategy 1: default pip install
-if "$PYTHON" -m pip install --no-cache-dir --upgrade "$PKG" 2>&1; then
+if "$PYTHON" -m pip install -q --no-cache-dir --upgrade "$PKG" > "$PIP_LOG" 2>&1; then
     INSTALLED=true
 fi
 
 # Strategy 2: --user flag (no write access to site-packages)
 if [ "$INSTALLED" = false ]; then
-    if "$PYTHON" -m pip install --no-cache-dir --user --upgrade "$PKG" 2>&1; then
+    if "$PYTHON" -m pip install -q --no-cache-dir --user --upgrade "$PKG" > "$PIP_LOG" 2>&1; then
         INSTALLED=true
     fi
 fi
 
 # Strategy 3: --break-system-packages (Debian/Ubuntu externally-managed)
 if [ "$INSTALLED" = false ]; then
-    if "$PYTHON" -m pip install --no-cache-dir --break-system-packages --upgrade "$PKG" 2>&1; then
+    if "$PYTHON" -m pip install -q --no-cache-dir --break-system-packages --upgrade "$PKG" > "$PIP_LOG" 2>&1; then
         INSTALLED=true
     fi
 fi
 
 if [ "$INSTALLED" = false ]; then
     echo "ERROR: Could not install $PKG"
+    echo "pip output:"
+    cat "$PIP_LOG"
+    echo ""
     echo "Run manually: $PYTHON -m pip install --no-cache-dir \"$PKG\""
+    rm -f "$PIP_LOG"
     exit 1
 fi
+
+rm -f "$PIP_LOG"
 
 # Save chain preference
 mkdir -p "$HOME/.blockrun"
