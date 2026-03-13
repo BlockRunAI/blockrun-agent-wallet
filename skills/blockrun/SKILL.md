@@ -121,91 +121,12 @@ When the user asks for something, find the matching row and run the code. Do NOT
 2. Create client (setup_agent_wallet for Base, setup_agent_solana_wallet for Solana)
 3. Check balance
 4. Estimate cost, show to user, ask to proceed
-5. If confirmed: execute, save results locally, show results, show cost
+5. If confirmed: execute, show results, show cost
 ```
+
+**Data auto-saved by SDK:** The `blockrun-llm` SDK automatically saves all paid API responses to `~/.blockrun/data/` as human-readable JSON files (e.g., `x_search_20260313_141500_Base_chain.json`). It also caches responses for deduplication (1 hour TTL for X data). You do NOT need to manually save data — just call the SDK methods and the data is persisted automatically.
 
 If user wants to switch chains: `echo "solana" > ~/.blockrun/.chain` (or `"base"`).
-
-## CRITICAL: Save All X/Twitter Data Locally
-
-**Users pay for every API call. Always persist the raw data locally so they never pay twice for the same data.**
-
-Storage location: `~/.blockrun/data/x/`
-
-### Save Helper (include in every script that calls x_* methods)
-
-```python
-import json, os
-from datetime import datetime
-
-def save_x_data(method, query, data, cost=0.0):
-    """Save X/Twitter API response to local storage."""
-    data_dir = os.path.expanduser("~/.blockrun/data/x")
-    os.makedirs(data_dir, exist_ok=True)
-
-    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    safe_query = "".join(c if c.isalnum() or c in "-_" else "_" for c in str(query))[:60]
-    filename = f"{method}_{safe_query}_{ts}.json"
-
-    record = {
-        "method": method,
-        "query": query,
-        "timestamp": datetime.now().isoformat(),
-        "cost_usd": cost,
-        "data": data,
-    }
-
-    filepath = os.path.join(data_dir, filename)
-    with open(filepath, "w") as f:
-        json.dump(record, f, indent=2, default=str)
-
-    return filepath
-```
-
-### How to serialize SDK results
-
-SDK results are Pydantic models. Convert them before saving:
-
-```python
-# For list results (followers, tweets, search, etc.)
-result = client.x_search("AI agents")
-raw = [t.model_dump() for t in result.tweets]
-path = save_x_data("x_search", "AI agents", raw, cost=spending['total_usd'])
-
-# For single results (user_info, trending, analytics)
-result = client.x_user_info("elonmusk")
-raw = result.data if isinstance(result.data, dict) else result.model_dump()
-path = save_x_data("x_user_info", "elonmusk", raw)
-
-# For paginated results (followers, followings) — save after all pages
-all_items = [u.model_dump() for u in all_followers]
-path = save_x_data("x_followers", "blockrunai", all_items, cost=spending['total_usd'])
-```
-
-**After saving, tell the user:** `Data saved to ~/.blockrun/data/x/x_search_AI_agents_20260313_141500.json`
-
-### Before making a paid call, check for recent local data
-
-If the user asks for the same data again within a short time, offer to use the local copy instead of paying again:
-
-```python
-import glob, time
-
-def find_recent_data(method, query, max_age_hours=1):
-    """Check if we have recent local data for this query."""
-    data_dir = os.path.expanduser("~/.blockrun/data/x")
-    safe_query = "".join(c if c.isalnum() or c in "-_" else "_" for c in str(query))[:60]
-    pattern = os.path.join(data_dir, f"{method}_{safe_query}_*.json")
-    files = sorted(glob.glob(pattern), reverse=True)
-    if files:
-        age_hours = (time.time() - os.path.getmtime(files[0])) / 3600
-        if age_hours < max_age_hours:
-            with open(files[0]) as f:
-                return json.load(f), files[0], age_hours
-    return None, None, None
-```
-
-When recent data exists, ask: `Found local data from 15 min ago. Use cached data (free) or fetch fresh ($0.032)?`
 
 ## How to Invoke
 
@@ -294,7 +215,7 @@ Would you like to:
 
 ## Complete Copy-Paste Scripts
 
-**Every script below includes `save_x_data()` — always copy it into your script.**
+**Data is auto-saved by the SDK** to `~/.blockrun/data/` after every paid call. No manual save code needed.
 
 ### Bulk Followings Export to CSV
 
@@ -302,18 +223,7 @@ When user asks "get followings for @username" or "export following list to CSV":
 
 ```python
 from blockrun_llm import setup_agent_wallet
-import csv, json, os
-from datetime import datetime
-
-def save_x_data(method, query, data, cost=0.0):
-    data_dir = os.path.expanduser("~/.blockrun/data/x")
-    os.makedirs(data_dir, exist_ok=True)
-    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    safe_q = "".join(c if c.isalnum() or c in "-_" else "_" for c in str(query))[:60]
-    fp = os.path.join(data_dir, f"{method}_{safe_q}_{ts}.json")
-    with open(fp, "w") as f:
-        json.dump({"method": method, "query": query, "timestamp": datetime.now().isoformat(), "cost_usd": cost, "data": data}, f, indent=2, default=str)
-    return fp
+import csv, os
 
 client = setup_agent_wallet()
 username = "bc1beat"  # CHANGE THIS
@@ -327,12 +237,6 @@ while True:
     if not result.has_next_page:
         break
     cursor = result.next_cursor
-
-# Save raw data locally
-spending = client.get_spending()
-raw = [u.model_dump() for u in all_followings]
-path = save_x_data("x_followings", username, raw, spending['total_usd'])
-print(f"Data saved to {path}")
 
 # Write CSV
 outfile = os.path.expanduser(f"~/Desktop/{username}_followings.csv")
@@ -349,6 +253,7 @@ with open(outfile, "w", newline="") as f:
             getattr(u, "description", "").replace("\n", " ")[:100],
         ])
 
+spending = client.get_spending()
 print(f"Done! {len(all_followings)} followings saved to {outfile}")
 print(f"Cost: ${spending['total_usd']:.4f}")
 client.close()
@@ -360,18 +265,7 @@ When user asks "get followers for @username" or "export follower list":
 
 ```python
 from blockrun_llm import setup_agent_wallet
-import csv, json, os
-from datetime import datetime
-
-def save_x_data(method, query, data, cost=0.0):
-    data_dir = os.path.expanduser("~/.blockrun/data/x")
-    os.makedirs(data_dir, exist_ok=True)
-    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    safe_q = "".join(c if c.isalnum() or c in "-_" else "_" for c in str(query))[:60]
-    fp = os.path.join(data_dir, f"{method}_{safe_q}_{ts}.json")
-    with open(fp, "w") as f:
-        json.dump({"method": method, "query": query, "timestamp": datetime.now().isoformat(), "cost_usd": cost, "data": data}, f, indent=2, default=str)
-    return fp
+import csv, os
 
 client = setup_agent_wallet()
 username = "blockrunai"  # CHANGE THIS
@@ -385,12 +279,6 @@ while True:
     if not result.has_next_page:
         break
     cursor = result.next_cursor
-
-# Save raw data locally
-spending = client.get_spending()
-raw = [u.model_dump() for u in all_followers]
-path = save_x_data("x_followers", username, raw, spending['total_usd'])
-print(f"Data saved to {path}")
 
 # Write CSV
 outfile = os.path.expanduser(f"~/Desktop/{username}_followers.csv")
@@ -407,6 +295,7 @@ with open(outfile, "w", newline="") as f:
             getattr(u, "description", "").replace("\n", " ")[:100],
         ])
 
+spending = client.get_spending()
 print(f"Done! {len(all_followers)} followers saved to {outfile}")
 print(f"Cost: ${spending['total_usd']:.4f}")
 client.close()
@@ -418,18 +307,6 @@ When user asks "look up @username profile" or "who is @username":
 
 ```python
 from blockrun_llm import setup_agent_wallet
-import json, os
-from datetime import datetime
-
-def save_x_data(method, query, data, cost=0.0):
-    data_dir = os.path.expanduser("~/.blockrun/data/x")
-    os.makedirs(data_dir, exist_ok=True)
-    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    safe_q = "".join(c if c.isalnum() or c in "-_" else "_" for c in str(query))[:60]
-    fp = os.path.join(data_dir, f"{method}_{safe_q}_{ts}.json")
-    with open(fp, "w") as f:
-        json.dump({"method": method, "query": query, "timestamp": datetime.now().isoformat(), "cost_usd": cost, "data": data}, f, indent=2, default=str)
-    return fp
 
 client = setup_agent_wallet()
 usernames = ["elonmusk", "blockrunai"]  # CHANGE THESE
@@ -439,9 +316,6 @@ for u in users.users:
     print(f"  Bio: {u.description[:100]}")
 
 spending = client.get_spending()
-raw = [u.model_dump() for u in users.users]
-path = save_x_data("x_user_lookup", ",".join(usernames), raw, spending['total_usd'])
-print(f"\nData saved to {path}")
 print(f"Cost: ${spending['total_usd']:.4f}")
 client.close()
 ```
@@ -452,18 +326,6 @@ When user asks "get info on @username" (single user, cheaper than x_user_lookup)
 
 ```python
 from blockrun_llm import setup_agent_wallet
-import json, os
-from datetime import datetime
-
-def save_x_data(method, query, data, cost=0.0):
-    data_dir = os.path.expanduser("~/.blockrun/data/x")
-    os.makedirs(data_dir, exist_ok=True)
-    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    safe_q = "".join(c if c.isalnum() or c in "-_" else "_" for c in str(query))[:60]
-    fp = os.path.join(data_dir, f"{method}_{safe_q}_{ts}.json")
-    with open(fp, "w") as f:
-        json.dump({"method": method, "query": query, "timestamp": datetime.now().isoformat(), "cost_usd": cost, "data": data}, f, indent=2, default=str)
-    return fp
 
 client = setup_agent_wallet()
 username = "elonmusk"  # CHANGE THIS
@@ -473,8 +335,6 @@ print(f"@{d.get('userName', '')}: {d.get('followers', 0)} followers")
 print(f"Bio: {str(d.get('description', ''))[:100]}")
 
 spending = client.get_spending()
-path = save_x_data("x_user_info", username, d, spending['total_usd'])
-print(f"\nData saved to {path}")
 print(f"Cost: ${spending['total_usd']:.4f}")
 client.close()
 ```
@@ -485,18 +345,6 @@ When user asks "show recent tweets from @username" or "what has @username posted
 
 ```python
 from blockrun_llm import setup_agent_wallet
-import json, os
-from datetime import datetime
-
-def save_x_data(method, query, data, cost=0.0):
-    data_dir = os.path.expanduser("~/.blockrun/data/x")
-    os.makedirs(data_dir, exist_ok=True)
-    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    safe_q = "".join(c if c.isalnum() or c in "-_" else "_" for c in str(query))[:60]
-    fp = os.path.join(data_dir, f"{method}_{safe_q}_{ts}.json")
-    with open(fp, "w") as f:
-        json.dump({"method": method, "query": query, "timestamp": datetime.now().isoformat(), "cost_usd": cost, "data": data}, f, indent=2, default=str)
-    return fp
 
 client = setup_agent_wallet()
 username = "blockrunai"  # CHANGE THIS
@@ -506,9 +354,6 @@ for tweet in result.tweets:
     print(f"  Likes: {tweet.favorite_count or 0} | RTs: {tweet.retweet_count or 0}")
 
 spending = client.get_spending()
-raw = [t.model_dump() for t in result.tweets]
-path = save_x_data("x_user_tweets", username, raw, spending['total_usd'])
-print(f"\nData saved to {path}")
 print(f"Cost: ${spending['total_usd']:.4f}")
 client.close()
 ```
@@ -519,18 +364,6 @@ When user asks "search X for ..." or "find tweets about ...":
 
 ```python
 from blockrun_llm import setup_agent_wallet
-import json, os
-from datetime import datetime
-
-def save_x_data(method, query, data, cost=0.0):
-    data_dir = os.path.expanduser("~/.blockrun/data/x")
-    os.makedirs(data_dir, exist_ok=True)
-    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    safe_q = "".join(c if c.isalnum() or c in "-_" else "_" for c in str(query))[:60]
-    fp = os.path.join(data_dir, f"{method}_{safe_q}_{ts}.json")
-    with open(fp, "w") as f:
-        json.dump({"method": method, "query": query, "timestamp": datetime.now().isoformat(), "cost_usd": cost, "data": data}, f, indent=2, default=str)
-    return fp
 
 client = setup_agent_wallet()
 query = "AI agents crypto"  # CHANGE THIS
@@ -540,9 +373,6 @@ for tweet in result.tweets:
     print(f"@{author.get('userName', '?')}: {(tweet.text or '')[:120]}")
 
 spending = client.get_spending()
-raw = [t.model_dump() for t in result.tweets]
-path = save_x_data("x_search", query, raw, spending['total_usd'])
-print(f"\nData saved to {path}")
 print(f"Cost: ${spending['total_usd']:.4f}")
 client.close()
 ```
@@ -553,18 +383,6 @@ When user asks "what's trending on X" or "show trending topics":
 
 ```python
 from blockrun_llm import setup_agent_wallet
-import json, os
-from datetime import datetime
-
-def save_x_data(method, query, data, cost=0.0):
-    data_dir = os.path.expanduser("~/.blockrun/data/x")
-    os.makedirs(data_dir, exist_ok=True)
-    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    safe_q = "".join(c if c.isalnum() or c in "-_" else "_" for c in str(query))[:60]
-    fp = os.path.join(data_dir, f"{method}_{safe_q}_{ts}.json")
-    with open(fp, "w") as f:
-        json.dump({"method": method, "query": query, "timestamp": datetime.now().isoformat(), "cost_usd": cost, "data": data}, f, indent=2, default=str)
-    return fp
 
 client = setup_agent_wallet()
 result = client.x_trending()
@@ -575,8 +393,6 @@ for topic in trends:
     print(f"- {name} ({volume} tweets)")
 
 spending = client.get_spending()
-path = save_x_data("x_trending", "global", result.data, spending['total_usd'])
-print(f"\nData saved to {path}")
 print(f"Cost: ${spending['total_usd']:.4f}")
 client.close()
 ```
@@ -587,18 +403,6 @@ When user asks "analyze @username's X account" or "author stats for @username":
 
 ```python
 from blockrun_llm import setup_agent_wallet
-import json, os
-from datetime import datetime
-
-def save_x_data(method, query, data, cost=0.0):
-    data_dir = os.path.expanduser("~/.blockrun/data/x")
-    os.makedirs(data_dir, exist_ok=True)
-    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    safe_q = "".join(c if c.isalnum() or c in "-_" else "_" for c in str(query))[:60]
-    fp = os.path.join(data_dir, f"{method}_{safe_q}_{ts}.json")
-    with open(fp, "w") as f:
-        json.dump({"method": method, "query": query, "timestamp": datetime.now().isoformat(), "cost_usd": cost, "data": data}, f, indent=2, default=str)
-    return fp
 
 client = setup_agent_wallet()
 username = "blockrunai"  # CHANGE THIS
@@ -609,8 +413,6 @@ print(f"  Score: {d.get('score', 'N/A')}")
 print(f"  Categories: {d.get('categories', [])}")
 
 spending = client.get_spending()
-path = save_x_data("x_author_analytics", username, d, spending['total_usd'])
-print(f"\nData saved to {path}")
 print(f"Cost: ${spending['total_usd']:.4f}")
 client.close()
 ```
