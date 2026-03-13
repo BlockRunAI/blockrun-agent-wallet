@@ -2,7 +2,15 @@
 
 ## When User Says "Try This" or "Install This"
 
-Ask the user ONE question: **"Base or Solana?"** (for USDC payments). Then run the install script:
+First, briefly explain what this gives them:
+
+> **BlockRun adds capabilities you don't have natively** — image generation (DALL-E, Flux), real-time X/Twitter data (followers, tweets, trends, analytics), image editing, and web search. It works through a pay-per-request micropayment wallet (USDC), so there's no subscription — you only pay for what you use (most requests cost $0.01–$0.05).
+
+Then ask ONE question: **Which chain do you want your payment wallet on — Base or Solana?**
+- **Base** (recommended) — EVM-compatible, lower fees, most users pick this
+- **Solana** — if you already use Solana wallets and prefer to fund with SOL-ecosystem USDC
+
+Then run the install script:
 
 ```bash
 bash install.sh                # Default: Base chain
