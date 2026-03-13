@@ -29,6 +29,18 @@ When the user asks for something, find the matching row and run the code. Do NOT
 | X/Twitter followings list | `client.x_followings(username)` | $0.05/page | [Bulk Followings Export](#bulk-followings-export-to-csv) |
 | X/Twitter followers list | `client.x_followers(username)` | $0.05/page | [Bulk Followers Export](#bulk-followers-export-to-csv) |
 | X/Twitter user profile | `client.x_user_lookup([usernames])` | $0.02 | [User Lookup](#x-user-lookup) |
+| X/Twitter user info (single) | `client.x_user_info(username)` | $0.002 | [User Info](#x-user-info) |
+| X/Twitter verified followers | `client.x_verified_followers(user_id)` | $0.048/page | — |
+| User's tweets | `client.x_user_tweets(username)` | $0.032/page | [User Tweets](#x-user-tweets) |
+| Tweets mentioning user | `client.x_user_mentions(username)` | $0.032/page | — |
+| Batch tweet lookup | `client.x_tweet_lookup(tweet_ids)` | $0.16/batch | — |
+| Tweet replies | `client.x_tweet_replies(tweet_id)` | $0.032/page | — |
+| Tweet thread | `client.x_tweet_thread(tweet_id)` | $0.032/page | — |
+| X/Twitter search | `client.x_search(query)` | $0.032/page | [X Search](#x-search) |
+| Trending topics | `client.x_trending()` | $0.002 | [Trending Topics](#x-trending-topics) |
+| Rising/viral articles | `client.x_articles_rising()` | $0.05 | — |
+| Author analytics | `client.x_author_analytics(handle)` | $0.02 | [Author Analytics](#x-author-analytics) |
+| Compare two authors | `client.x_compare_authors(handle1, handle2)` | $0.05 | — |
 | Real-time X/Twitter posts | `client.chat("xai/grok-3", prompt, search=True)` | ~$0.25 | [Live Search](#real-time-xtwitter-search) |
 | Web/news search | `client.search(query)` | ~$0.25 | [Standalone Search](#standalone-search) |
 | Image generation | `client.generate(prompt)` | $0.01-$0.04 | [Image Generation](#image-generation) |
@@ -53,7 +65,7 @@ Users can trigger this skill in two ways:
 - **Slash command:** `/blockrun <request>` (e.g., `/blockrun use grok to analyze @elonmusk`)
 - **Keyword in message:** Include "blockrun" or model names (e.g., "blockrun grok find trending crypto", "use grok to check...")
 
-Common triggers: `blockrun`, `use grok`, `use gpt`, `dall-e`, `deepseek`, `generate image`, `following`, `followers`, `x.com`, `twitter`
+Common triggers: `blockrun`, `use grok`, `use gpt`, `dall-e`, `deepseek`, `generate image`, `following`, `followers`, `x.com`, `twitter`, `trending`, `tweets`, `mentions`, `thread`
 
 ## CRITICAL: Balance Check Before API Calls
 
@@ -106,8 +118,18 @@ Would you like to:
 | Grok + Live Search (5 sources) | ~$0.13 |
 | Standalone search (10 sources) | ~$0.25 |
 | X user lookup (1-10 users) | $0.02 |
+| X user info (single) | $0.002 |
 | X followers/followings (1 page ~200 accounts) | $0.05 |
 | X followers/followings (1000 accounts, ~5 pages) | ~$0.25 |
+| X verified followers (1 page) | $0.048 |
+| X user tweets / mentions (1 page) | $0.032 |
+| X tweet lookup (batch) | $0.16 |
+| X tweet replies / thread (1 page) | $0.032 |
+| X search (1 page) | $0.032 |
+| X trending topics | $0.002 |
+| X rising/viral articles | $0.05 |
+| X author analytics | $0.02 |
+| X compare authors | $0.05 |
 | GPT-5.2 query (typical) | ~$0.02 |
 | DeepSeek query | ~$0.001 |
 | DALL-E image | $0.04 |
@@ -230,6 +252,99 @@ print(f"\nCost: ${spending['total_usd']:.4f}")
 client.close()
 ```
 
+### X User Info
+
+When user asks "get info on @username" (single user, cheaper than x_user_lookup):
+
+```python
+from blockrun_llm import setup_agent_wallet
+
+client = setup_agent_wallet()
+info = client.x_user_info("elonmusk")  # CHANGE THIS
+d = info.data  # Raw dict from AttentionVC
+print(f"@{d.get('userName', '')}: {d.get('followers', 0)} followers")
+print(f"Bio: {str(d.get('description', ''))[:100]}")
+
+spending = client.get_spending()
+print(f"\nCost: ${spending['total_usd']:.4f}")
+client.close()
+```
+
+### X User Tweets
+
+When user asks "show recent tweets from @username" or "what has @username posted":
+
+```python
+from blockrun_llm import setup_agent_wallet
+
+client = setup_agent_wallet()
+result = client.x_user_tweets("blockrunai")  # CHANGE THIS
+for tweet in result.tweets:
+    print(f"- {(tweet.text or '')[:120]}")
+    print(f"  Likes: {tweet.favorite_count or 0} | RTs: {tweet.retweet_count or 0}")
+
+spending = client.get_spending()
+print(f"\nCost: ${spending['total_usd']:.4f}")
+client.close()
+```
+
+### X Search
+
+When user asks "search X for ..." or "find tweets about ...":
+
+```python
+from blockrun_llm import setup_agent_wallet
+
+client = setup_agent_wallet()
+result = client.x_search("AI agents crypto")  # CHANGE THIS
+for tweet in result.tweets:
+    author = tweet.author or {}
+    print(f"@{author.get('userName', '?')}: {(tweet.text or '')[:120]}")
+
+spending = client.get_spending()
+print(f"\nCost: ${spending['total_usd']:.4f}")
+client.close()
+```
+
+### X Trending Topics
+
+When user asks "what's trending on X" or "show trending topics":
+
+```python
+from blockrun_llm import setup_agent_wallet
+
+client = setup_agent_wallet()
+result = client.x_trending()
+trends = result.data.get("trends", [])
+for topic in trends:
+    name = topic.get("name", "") if isinstance(topic, dict) else str(topic)
+    volume = topic.get("tweet_volume", "N/A") if isinstance(topic, dict) else "N/A"
+    print(f"- {name} ({volume} tweets)")
+
+spending = client.get_spending()
+print(f"\nCost: ${spending['total_usd']:.4f}")
+client.close()
+```
+
+### X Author Analytics
+
+When user asks "analyze @username's X account" or "author stats for @username":
+
+```python
+from blockrun_llm import setup_agent_wallet
+
+client = setup_agent_wallet()
+result = client.x_author_analytics("blockrunai")  # CHANGE THIS
+d = result.data  # Raw dict from AttentionVC
+print(f"Analytics for @{result.handle}:")
+print(f"  Score: {d.get('score', 'N/A')}")
+print(f"  Categories: {d.get('categories', [])}")
+
+spending = client.get_spending()
+print(f"\nCost: ${spending['total_usd']:.4f}")
+client.close()
+```
+
 ---
 
 ## Philosophy
@@ -242,7 +357,15 @@ You have a wallet. When you need a capability you lack, you pay for it autonomou
 | Image editing (img2img) | `client.image_edit()` | $0.02-0.04/image |
 | Real-time X data | Grok + Live Search | $0.025/source |
 | X user profiles | `client.x_user_lookup()` | $0.002/user (min $0.02) |
+| X single user info | `client.x_user_info()` | $0.002 |
 | X followers/followings | `client.x_followers()` / `x_followings()` | $0.05/page |
+| X verified followers | `client.x_verified_followers()` | $0.048/page |
+| X user tweets/mentions | `client.x_user_tweets()` / `x_user_mentions()` | $0.032/page |
+| X tweet lookup/replies/thread | `client.x_tweet_lookup()` / `x_tweet_replies()` / `x_tweet_thread()` | $0.032-0.16 |
+| X search | `client.x_search()` | $0.032/page |
+| X trending topics | `client.x_trending()` | $0.002 |
+| X rising articles | `client.x_articles_rising()` | $0.05 |
+| X author analytics | `client.x_author_analytics()` / `x_compare_authors()` | $0.02-0.05 |
 | Web + X + news search | `client.search()` | ~$0.25 (10 sources) |
 | Second opinion | GPT-5.2 | $1.75/M input, $14/M output |
 | Cheaper processing | DeepSeek | $0.28/M input, $0.42/M output |
@@ -297,10 +420,21 @@ print(f"Total spent: ${spending['total_usd']:.4f} across {spending['calls']} cal
 |-----------|-------------|
 | "blockrun generate an image of a sunset" | Call DALL-E via ImageClient |
 | "blockrun edit this image to add a rainbow" | Call `client.image_edit()` |
-| "use grok to check what's trending on X" | Call Grok with `search=True` |
+| "use grok to check what's trending on X" | Call `client.x_trending()` ($0.002, cheapest) or Grok with `search=True` |
 | "blockrun lookup @elonmusk on X" | Call `client.x_user_lookup()` (cheaper than Grok) |
+| "blockrun get info on @username" | Call `client.x_user_info()` for single user ($0.002) |
 | "blockrun get followers of @blockrunai" | Call `client.x_followers()` with pagination |
+| "get verified followers of @username" | Call `client.x_verified_followers()` |
 | "find @username following" / "get following list" | Call `client.x_followings()` with pagination, export CSV |
+| "show recent tweets from @username" | Call `client.x_user_tweets()` |
+| "who's mentioning @username on X" | Call `client.x_user_mentions()` |
+| "get replies to this tweet" | Call `client.x_tweet_replies(tweet_id)` |
+| "show the full thread for this tweet" | Call `client.x_tweet_thread(tweet_id)` |
+| "search X for AI agents" | Call `client.x_search()` ($0.032, cheaper than Grok search) |
+| "what's trending on X right now" | Call `client.x_trending()` ($0.002) |
+| "show viral articles on X" | Call `client.x_articles_rising()` |
+| "analyze @username's X account" | Call `client.x_author_analytics()` |
+| "compare @user1 and @user2 on X" | Call `client.x_compare_authors()` |
 | "blockrun search latest AI news" | Call `client.search()` |
 | "blockrun GPT review this code" | Call GPT-5.2 via LLMClient |
 | "what's the latest news about AI agents?" | Suggest search or Grok (you lack real-time data) |
@@ -500,8 +634,20 @@ response = client.chat("xai/grok-3", "What's trending?",
 | `google/nano-banana` | Image generation (fast, artistic) | $0.01/image |
 | `client.image_edit()` | Image editing (img2img) | $0.02-0.04/image |
 | `client.x_user_lookup()` | X/Twitter user profiles | $0.002/user (min $0.02) |
+| `client.x_user_info()` | X/Twitter single user info | $0.002 |
+| `client.x_verified_followers()` | X/Twitter verified followers | $0.048/page |
 | `client.x_followers()` | X/Twitter followers | $0.05/page (~200) |
 | `client.x_followings()` | X/Twitter followings | $0.05/page (~200) |
+| `client.x_user_tweets()` | User's tweets | $0.032/page |
+| `client.x_user_mentions()` | Tweets mentioning user | $0.032/page |
+| `client.x_tweet_lookup()` | Batch tweet lookup | $0.16/batch |
+| `client.x_tweet_replies()` | Tweet replies | $0.032/page |
+| `client.x_tweet_thread()` | Tweet thread | $0.032/page |
+| `client.x_search()` | X/Twitter search | $0.032/page |
+| `client.x_trending()` | Trending topics | $0.002 |
+| `client.x_articles_rising()` | Rising/viral articles | $0.05 |
+| `client.x_author_analytics()` | Author analytics | $0.02 |
+| `client.x_compare_authors()` | Compare two authors | $0.05 |
 | `xai/grok-3` + search | Live X/Twitter posts & trends | ~$0.25 (10 sources) |
 | `client.search()` | Web + X + news search | ~$0.25 (10 sources) |
 
@@ -534,7 +680,17 @@ All LLM costs are per million tokens (M = 1,000,000 tokens).
 | Grok Live Search | $0.025/source (default 10 = $0.25) |
 | Standalone search | $0.025/source (default 10 = $0.25) |
 | X user lookup | $0.002/user (min $0.02) |
+| X user info (single) | $0.002 |
+| X verified followers | $0.048/page |
 | X followers/followings | $0.05/page (~200 accounts) |
+| X user tweets / mentions | $0.032/page |
+| X tweet lookup (batch) | $0.16/batch |
+| X tweet replies / thread | $0.032/page |
+| X search | $0.032/page |
+| X trending topics | $0.002 |
+| X rising/viral articles | $0.05 |
+| X author analytics | $0.02 |
+| X compare authors | $0.05 |
 | DALL-E image | $0.04/image |
 | Image editing (img2img) | $0.02-0.04/image |
 | Nano Banana image | $0.01/image |

@@ -79,6 +79,8 @@ No human approval needed. No API key setup. The agent decided it needed image ge
 "edit this image to add a rainbow"      → GPT Image $0.03
 "what's @blockrunai posting on X?"      → Grok + Live Search $0.25
 "get followers of @elonmusk"            → X Data API $0.05/page
+"what's trending on X right now?"       → Trending topics $0.002
+"get @elonmusk's recent tweets"         → User tweets $0.032
 "search latest AI agent news"           → Web + X + News $0.25
 "GPT review this code for edge cases"   → Second opinion $0.02
 "deepseek summarize each file in /docs" → Bulk processing $0.0001/call
@@ -126,6 +128,8 @@ You should see your wallet address and balance. A wallet is auto-created at `~/.
 | DALL-E images | ~25 images |
 | X/Twitter user lookups | ~50 lookups |
 | X followers/followings | ~20 pages (~4,000 accounts) |
+| X tweets, replies, search | ~31 pages |
+| X trending / author analytics | ~50-500 calls |
 | Live search (web + X + news) | ~4 searches |
 | Second opinions (GPT-5) | ~1,000 calls |
 | Bulk processing (DeepSeek) | ~10,000 calls |
@@ -187,8 +191,20 @@ export SOLANA_WALLET_KEY="your-bs58-solana-key"
 | Endpoint | Description | Cost |
 |----------|-------------|------|
 | `x_user_lookup()` | Batch user profile lookup | $0.002/user (min $0.02) |
+| `x_user_info()` | Single user detailed profile | $0.002 |
 | `x_followers()` | Get user's followers | $0.05/page (~200 accounts) |
 | `x_followings()` | Get user's followings | $0.05/page (~200 accounts) |
+| `x_verified_followers()` | Verified followers only | $0.048/page |
+| `x_user_tweets()` | User's tweets | $0.032/page |
+| `x_user_mentions()` | Tweets mentioning a user | $0.032/page |
+| `x_tweet_lookup()` | Batch tweet data (up to 200) | $0.16/batch |
+| `x_tweet_replies()` | Replies to a tweet | $0.032/page |
+| `x_tweet_thread()` | Full tweet thread | $0.032/page |
+| `x_search()` | Advanced X/Twitter search | $0.032/page |
+| `x_trending()` | Current trending topics | $0.002 |
+| `x_articles_rising()` | Viral article detection | $0.05 |
+| `x_author_analytics()` | Author intelligence metrics | $0.02 |
+| `x_compare_authors()` | Compare two authors | $0.05 |
 | Grok + Live Search | Real-time X posts and trends | ~$0.25 (10 sources) |
 
 ### Search
@@ -225,6 +241,10 @@ All endpoints work on both **Base** (`LLMClient`) and **Solana** (`SolanaLLMClie
 "get followers of @blockrunai"
 "lookup @elonmusk @blockrunai profiles on X"
 "what are people saying about AI agents on X?"
+"what's trending on X?"
+"get @elonmusk's recent tweets"
+"show replies to this tweet"
+"compare @elonmusk and @sama on X"
 ```
 
 ### Edit images
