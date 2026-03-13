@@ -492,17 +492,29 @@ response = client.chat("xai/grok-3", "What's trending?",
 
 ## Available Models
 
+### Capabilities Claude Lacks (Primary Use)
+
+| Model / Endpoint | Capability | Cost |
+|------------------|------------|------|
+| `openai/dall-e-3` | Image generation (photorealistic) | $0.04/image |
+| `google/nano-banana` | Image generation (fast, artistic) | $0.01/image |
+| `client.image_edit()` | Image editing (img2img) | $0.02-0.04/image |
+| `client.x_user_lookup()` | X/Twitter user profiles | $0.002/user (min $0.02) |
+| `client.x_followers()` | X/Twitter followers | $0.05/page (~200) |
+| `client.x_followings()` | X/Twitter followings | $0.05/page (~200) |
+| `xai/grok-3` + search | Live X/Twitter posts & trends | ~$0.25 (10 sources) |
+| `client.search()` | Web + X + news search | ~$0.25 (10 sources) |
+
+### LLM Models (Second Opinions & Bulk Processing)
+
 | Model | Best For | Pricing |
 |-------|----------|---------|
-| `openai/gpt-5.2` | Second opinions, code review, general | $1.75/M in, $14/M out |
+| `openai/gpt-5.2` | Second opinions, code review | $1.75/M in, $14/M out |
+| `deepseek/deepseek-chat` | Bulk processing (cheapest) | $0.28/M in, $0.42/M out |
 | `openai/gpt-5-mini` | Cost-optimized reasoning | $0.30/M in, $1.20/M out |
-| `openai/o4-mini` | Latest efficient reasoning | $1.10/M in, $4.40/M out |
-| `openai/o3` | Advanced reasoning, complex problems | $10/M in, $40/M out |
-| `xai/grok-3` | Real-time X/Twitter data | $3/M + $0.025/source |
-| `deepseek/deepseek-chat` | Simple tasks, bulk processing | $0.28/M in, $0.42/M out |
-| `google/gemini-2.5-flash` | Very long documents, fast | $0.15/M in, $0.60/M out |
-| `openai/dall-e-3` | Photorealistic images | $0.04/image |
-| `google/nano-banana` | Fast, artistic images | $0.01/image |
+| `openai/o4-mini` | Efficient reasoning | $1.10/M in, $4.40/M out |
+| `openai/o3` | Complex reasoning | $10/M in, $40/M out |
+| `google/gemini-2.5-flash` | Very long documents | $0.15/M in, $0.60/M out |
 
 *M = million tokens. Actual cost depends on your prompt and response length.*
 

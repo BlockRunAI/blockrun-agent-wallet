@@ -59,32 +59,32 @@ No human approval needed. No API key setup. The agent decided it needed image ge
 
 ## Who Is This For?
 
-| You believe... | BlockRun enables... |
-|----------------|---------------------|
-| Agents should handle their own capabilities | Agent pays for GPT/Grok/DALL-E autonomously |
-| Budgets are better than permissions | Cap spending with wallet balance, not key restrictions |
-| Less human-in-the-loop is better | No approval needed for each capability decision |
-| Agents should be more autonomous | Agent decides what tools to use, pays for them |
+| Your agent can't... | BlockRun adds... |
+|----------------------|-------------------|
+| Generate images | DALL-E, Nano Banana — $0.01-0.04/image |
+| Access X/Twitter data | User profiles, followers, live posts — $0.02-0.25 |
+| Edit images with AI | img2img editing — $0.02-0.04/image |
+| Search the web in real time | Web + X + news search — $0.25 |
+| Get a second opinion | GPT, DeepSeek, Grok — $0.001-0.02/call |
+| Process bulk data cheaply | DeepSeek — $0.0001/call |
 
-**If you want to manually manage every API key and approve every capability, this isn't for you.**
-
-This is for people building autonomous agents.
+**Your agent acquires capabilities on demand, within a budget you control.**
 
 ---
 
 ## Quick Example
 
 ```
-"blockrun generate a logo"              → Agent pays DALL-E $0.04
-"blockrun edit this image"              → Agent pays GPT Image $0.03
-"blockrun grok what's trending on X"    → Agent pays for live X data $0.25
-"blockrun lookup @elonmusk on X"        → Agent pays AttentionVC $0.02
-"blockrun GPT review this code"         → Agent pays GPT-5 $0.001
-"blockrun search latest AI news"        → Agent pays for web search $0.25
-"blockrun deepseek summarize 500 files" → Agent pays DeepSeek $0.0001/call
+"generate a logo for my startup"        → DALL-E $0.04
+"edit this image to add a rainbow"      → GPT Image $0.03
+"what's @blockrunai posting on X?"      → Grok + Live Search $0.25
+"get followers of @elonmusk"            → X Data API $0.05/page
+"search latest AI agent news"           → Web + X + News $0.25
+"GPT review this code for edge cases"   → Second opinion $0.02
+"deepseek summarize each file in /docs" → Bulk processing $0.0001/call
 ```
 
-Your agent has a USDC balance. When it needs a capability, it pays. You set the budget limit by how much you fund the wallet.
+Your agent has a USDC balance. When it needs a capability it lacks, it pays. You set the budget by how much you fund the wallet.
 
 ---
 
@@ -121,12 +121,14 @@ You should see your wallet address and balance. A wallet is auto-created at `~/.
 
 ### What $1 Gets You
 
-| Model | Calls per $1 |
-|-------|--------------|
-| GPT-5 | ~1,000 |
-| DeepSeek | ~10,000 |
-| Grok (with live X) | ~500 |
-| DALL-E images | ~25 |
+| Capability | Calls per $1 |
+|------------|--------------|
+| DALL-E images | ~25 images |
+| X/Twitter user lookups | ~50 lookups |
+| X followers/followings | ~20 pages (~4,000 accounts) |
+| Live search (web + X + news) | ~4 searches |
+| Second opinions (GPT-5) | ~1,000 calls |
+| Bulk processing (DeepSeek) | ~10,000 calls |
 
 **$1-5 USDC is enough for weeks of normal use.**
 
@@ -170,85 +172,80 @@ export SOLANA_WALLET_KEY="your-bs58-solana-key"
 
 ---
 
-## Available Models
+## Capabilities
 
-| Model | Best For | Cost |
-|-------|----------|------|
-| `openai/gpt-5.2` | Code review, second opinions | $0.001/call |
-| `openai/gpt-5-mini` | Cost-optimized tasks | $0.0003/call |
-| `xai/grok-3` | **Live X/Twitter data** | $0.002/call |
-| `deepseek/deepseek-chat` | Bulk processing (10x cheaper) | $0.0001/call |
-| `openai/dall-e-3` | Photorealistic images | $0.04/image |
-| `google/nano-banana` | Fast artistic images | $0.01/image |
-| `openai/o3` | Complex reasoning | $$$ |
-| `google/gemini-2.5-flash` | Long documents (1M+ tokens) | $$ |
+### Image Generation & Editing
 
-30+ models across OpenAI, xAI, Google, DeepSeek, and Anthropic.
+| Capability | Model | Cost |
+|------------|-------|------|
+| Photorealistic images | `openai/dall-e-3` | $0.04/image |
+| Fast artistic images | `google/nano-banana` | $0.01/image |
+| Edit images with prompts | `image_edit()` | $0.02-0.04/image |
 
-### X/Twitter Data (Powered by AttentionVC)
-
-Direct X/Twitter data access — no Grok needed:
+### X/Twitter Data
 
 | Endpoint | Description | Cost |
 |----------|-------------|------|
 | `x_user_lookup()` | Batch user profile lookup | $0.002/user (min $0.02) |
 | `x_followers()` | Get user's followers | $0.05/page (~200 accounts) |
 | `x_followings()` | Get user's followings | $0.05/page (~200 accounts) |
+| Grok + Live Search | Real-time X posts and trends | ~$0.25 (10 sources) |
 
-### Other New Endpoints
+### Search
 
 | Endpoint | Description | Cost |
 |----------|-------------|------|
-| `search()` | Standalone web + X + news search | ~$0.25 (10 sources) |
-| `image_edit()` | Edit images with text prompts (img2img) | $0.02-0.04/image |
+| `search()` | Web + X + news search | ~$0.25 (10 sources) |
 
-All endpoints above work on both **Base** (`LLMClient`) and **Solana** (`SolanaLLMClient`).
+### LLM Models (Second Opinions & Bulk Processing)
+
+| Model | Best For | Cost |
+|-------|----------|------|
+| `openai/gpt-5.2` | Code review, second opinions | ~$0.02/call |
+| `deepseek/deepseek-chat` | Bulk processing (10x cheaper) | ~$0.001/call |
+| `xai/grok-3` | Live X data + reasoning | ~$0.25 with search |
+| `openai/o3` | Complex reasoning | $$$ |
+
+30+ models across OpenAI, xAI, Google, DeepSeek, and Anthropic.
+
+All endpoints work on both **Base** (`LLMClient`) and **Solana** (`SolanaLLMClient`).
 
 ---
 
 ## Use Cases
 
-### Agent needs image generation
-Agent encounters a task requiring images, decides to use DALL-E, pays for it.
+### Generate images
 ```
-"blockrun dall-e generate a minimalist logo"
-```
-
-### Agent needs real-time data
-Agent needs current information, decides Grok has live X access, pays for the query.
-```
-"blockrun grok what are people saying about AI agents today?"
+"generate a minimalist logo for my startup"
+"create a hero image for the landing page"
 ```
 
-### Agent needs X/Twitter user data
-Agent needs profile data or follower lists, uses the cheaper direct endpoints.
+### Get X/Twitter data
 ```
-"blockrun lookup @elonmusk @blockrunai on X"
-"blockrun get followers of @blockrunai"
-```
-
-### Agent needs to search the web
-Agent needs current info without a full chat model, uses standalone search.
-```
-"blockrun search latest AI agent frameworks 2026"
+"get followers of @blockrunai"
+"lookup @elonmusk @blockrunai profiles on X"
+"what are people saying about AI agents on X?"
 ```
 
-### Agent needs to edit an image
-Agent has an image and wants to modify it with a text prompt.
+### Edit images
 ```
-"blockrun edit this image to make the sky purple"
-```
-
-### Agent wants a second opinion
-Agent decides another model might catch different bugs, pays for the review.
-```
-"blockrun GPT review this function for edge cases"
+"edit this image to make the sky purple"
+"add northern lights to this photo"
 ```
 
-### Agent needs to process bulk data cheaply
-Agent decides DeepSeek is cost-effective for simple tasks, routes accordingly.
+### Search the web
 ```
-"blockrun deepseek summarize each file in /docs"
+"search latest AI agent frameworks 2026"
+```
+
+### Get a second opinion on code
+```
+"GPT review this function for edge cases"
+```
+
+### Bulk processing
+```
+"deepseek summarize each file in /docs"
 ```
 
 ---
