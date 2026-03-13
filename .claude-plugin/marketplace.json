@@ -8,7 +8,7 @@
     {
       "name": "blockrun",
       "source": "./skills/blockrun",
-      "description": "Give Claude Code a wallet to pay for GPT, Grok, DALL-E and 30+ AI models via USDC micropayments"
+      "description": "Real-time X/Twitter data (15 endpoints), image generation, and 30+ AI models — no API keys, just USDC micropayments"
     }
   ]
 }

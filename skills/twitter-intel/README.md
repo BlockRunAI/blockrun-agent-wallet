@@ -1,70 +1,54 @@
 # Twitter Intel
 
-Real-time X/Twitter intelligence for Claude Code. Analyze accounts, track topics, and monitor keywords with live data.
+Real-time X/Twitter data for Claude Code. Get followers, tweets, trends, analytics — no X API keys needed.
 
-## Features
-
-| Command | What It Does |
-|---------|--------------|
-| `/twitter-intel @username` | Analyze account activity, engagement, and content style |
-| `/twitter-intel #topic` | Track trending discussions and sentiment |
-| `/twitter-intel "keyword"` | Monitor brand mentions and competitor activity |
-
-## Quick Start
-
-```bash
-# Install dependency
-pip install blockrun-llm
-```
-
-Then use natural language:
-- "What's @pmarca posting about lately?"
-- "What's trending about #AIAgents on X?"
-- "Check Twitter for mentions of my product"
-
-## How It Works
-
-Uses [BlockRun](https://blockrun.ai) to access xAI's Grok with Live Search - real-time X/Twitter data without API keys.
-
-**Pricing**: ~$0.25-0.50 per query (pay-per-use, no subscription)
-
-## Requirements
-
-- Claude Code or compatible Claude environment
-- BlockRun SDK (`pip install blockrun-llm`)
-- USDC on Base network ($1-5 recommended)
-
-## Example Output
+## What You Can Do
 
 ```
-# Twitter Intel: @elonmusk
-
-## Overview
-- **Recent Activity**: Very active, 10+ posts daily
-- **Primary Topics**: AI, X platform, Tesla, SpaceX
-
-## Recent Highlights
-1. **AI announcement thread** - 15K likes
-2. **Product launch teaser** - 8K likes
-
-## Key Insights
-- Heavy focus on AI developments
-- High engagement on controversial takes
-- Responds frequently to tech community
-
-Query cost: $0.38
+"get followers of @blockrunai"           → follower list with bios
+"what's @elonmusk been tweeting?"        → recent tweets with engagement
+"what's trending on X?"                  → trending topics
+"search X for AI agent discussions"      → matching tweets and authors
+"compare @elonmusk vs @sama"             → side-by-side analytics
+"analyze @blockrunai's X presence"       → engagement score and metrics
 ```
 
-## Why This Skill?
+## 15 Endpoints
 
-Claude doesn't have real-time social media access. This skill bridges that gap with live X/Twitter data, perfect for:
+| Endpoint | Cost |
+|----------|------|
+| `x_user_info()` — single profile | $0.002 |
+| `x_user_lookup()` — batch profiles | $0.002/user |
+| `x_followers()` — follower list | $0.05/page |
+| `x_followings()` — following list | $0.05/page |
+| `x_verified_followers()` — verified only | $0.048/page |
+| `x_user_tweets()` — user's tweets | $0.032/page |
+| `x_user_mentions()` — mentions of user | $0.032/page |
+| `x_tweet_lookup()` — tweet details | $0.16/batch |
+| `x_tweet_replies()` — reply thread | $0.032/page |
+| `x_tweet_thread()` — full thread | $0.032/page |
+| `x_search()` — advanced search | $0.032/page |
+| `x_trending()` — trending topics | $0.002 |
+| `x_articles_rising()` — viral articles | $0.05 |
+| `x_author_analytics()` — author metrics | $0.02 |
+| `x_compare_authors()` — compare two users | $0.05 |
 
-- Market research
-- Competitor monitoring
-- Influencer discovery
-- Brand sentiment tracking
-- Trend analysis
+Plus **Grok Live Search** for sentiment analysis (~$0.25/query).
+
+## Install
+
+This is part of BlockRun. In Claude Code:
+
+```
+try https://github.com/BlockRunAI/blockrun-agent-wallet
+```
+
+Or: `pip install blockrun-llm`
+
+## Pricing
+
+$1 gets you ~500 profile lookups, ~20 pages of followers (~4,000 accounts), or ~31 pages of tweets/search results.
 
 ---
 
-**Powered by [BlockRun](https://blockrun.ai)** - Autonomous AI payments for real-time data
+**Powered by [BlockRun](https://blockrun.ai)** — pay-per-request, no X API keys or subscriptions
