@@ -46,23 +46,23 @@
 
 ---
 
-## Install (30 seconds)
+## Install
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/BlockRunAI/blockrun-agent-wallet/main/install.sh | bash
+In Claude Code, just say:
+
+```
+try https://github.com/BlockRunAI/blockrun-agent-wallet
 ```
 
-Creates a USDC wallet, shows a QR code — scan to fund with $1-5. Done.
-
-For Solana: `CHAIN=solana bash install.sh`
+Claude will install it, create a USDC wallet, and show a QR code to fund. Done.
 
 <details>
 <summary>Other install methods</summary>
 
+- **Shell:** `curl -fsSL https://raw.githubusercontent.com/BlockRunAI/blockrun-agent-wallet/main/install.sh | bash`
+- **Solana:** `CHAIN=solana bash install.sh`
 - **MCP Server:** `claude mcp add blockrun -- npx @blockrun/mcp`
-- **Manual:** `pip install blockrun-llm && git clone https://github.com/BlockRunAI/blockrun-agent-wallet ~/.claude/skills/blockrun`
 - **Antigravity:** `git clone https://github.com/BlockRunAI/blockrun-agent-wallet ~/.gemini/antigravity/skills/blockrun`
-- **Verify:** `python3 -c "from blockrun_llm import status; status()"`
 
 </details>
 
