@@ -109,6 +109,31 @@ def _api(client, endpoint: str, body: dict) -> Dict[str, Any]:
     return result
 
 
+def _tweet_link(tw: dict) -> str:
+    """Get direct link to a tweet. Always show links — user needs to find the tweet."""
+    tid = tw.get("id", "")
+    author = tw.get("author", {})
+    handle = author.get("userName", "")
+    if tid and handle:
+        return f"https://x.com/{handle}/status/{tid}"
+    elif tid:
+        return f"https://x.com/i/status/{tid}"
+    return ""
+
+
+def _print_tweet(tw: dict, indent: str = "    ", max_text: int = 100):
+    """Print a tweet with author, engagement, text, and link."""
+    author = tw.get("author", {})
+    handle = author.get("userName", "?")
+    text = tw.get("text", "")[:max_text].replace("\n", " ")
+    likes = tw.get("likeCount", 0)
+    rts = tw.get("retweetCount", 0)
+    link = _tweet_link(tw)
+    print(f"{indent}@{handle:<16} {likes:>3} likes  {rts:>3} RTs  {text}")
+    if link:
+        print(f"{indent}  {link}")
+
+
 # ── Workflow 1: Insight Report ──────────────────────────────────
 
 def insight(username: str):
@@ -151,12 +176,7 @@ def insight(username: str):
 
     print(f"\n  MENTIONS ({mentions.get('total_returned', 0)} recent)")
     for tw in mention_tweets[:5]:
-        author = tw.get("author", {})
-        text = tw.get("text", "")[:100].replace("\n", " ")
-        likes = tw.get("likeCount", 0)
-        rts = tw.get("retweetCount", 0)
-        handle = author.get("userName", "?")
-        print(f"    @{handle:<16} {likes:>3} likes  {rts:>3} RTs  {text}")
+        _print_tweet(tw)
 
     # 3. Followers — top by influence
     print("\n  Fetching followers...")
@@ -223,11 +243,7 @@ def radar(topic: str):
 
     print(f"\n  LATEST TWEETS ({len(search_tweets)} found)")
     for tw in search_tweets[:8]:
-        author = tw.get("author", {})
-        text = tw.get("text", "")[:110].replace("\n", " ")
-        likes = tw.get("likeCount", 0)
-        handle = author.get("userName", "?")
-        print(f"    @{handle:<16} [{likes:>4} likes] {text}")
+        _print_tweet(tw, max_text=110)
 
     # 3. Top tweets (may not be available on all endpoints)
     top_tweets = []
@@ -242,13 +258,10 @@ def radar(topic: str):
         print(f"\n  TOP PERFORMING TWEETS ({len(top_tweets)})")
         for tw in top_tweets[:5]:
             author = tw.get("author", {})
-            text = tw.get("text", "")[:110].replace("\n", " ")
-            likes = tw.get("likeCount", 0)
-            rts = tw.get("retweetCount", 0)
-            handle = author.get("userName", "?")
             a_followers = author.get("followers", author.get("followersCount", 0))
+            handle = author.get("userName", "?")
             print(f"    @{handle} ({a_followers:,} followers)")
-            print(f"      {likes} likes | {rts} RTs | {text}")
+            _print_tweet(tw, indent="      ", max_text=110)
             print()
 
     # 4. Rising articles
