@@ -2,6 +2,8 @@
 
 <div align="center">
 
+<img src="assets/socialclaw-banner.png" alt="SocialClaw" width="600" />
+
 <h3>X/Twitter Marketing Intelligence for AI Agents</h3>
 
 <p>Turn real-time X/Twitter data into growth strategy — account insights, competitor analysis, audience mapping, KOL discovery, and daily briefs. Works with any AI coding agent.</p>
